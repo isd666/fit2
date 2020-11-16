@@ -1,0 +1,263 @@
+<div>
+	<div id="home-html">
+		<div class="home-box">
+			<div class="header flex jc-sb flex-center">
+				<div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div>
+				<div class="navBox flex flex-center f-28 curr-box" data-currbox="aa">
+					<a href="javascript:;" onclick="getFitHome()" class="nav1 mag-r-50 flex-center" id="aa-0" data-right="aa-1"
+					 data-down="b-0"><img src="images/icon1.png">视频课程</a>
+					<a href="#!personal/vip-html?resh" class="nav2 flex-center flex-center" id="aa-1" data-left="aa-0" data-down="b-0"><img
+						 src="images/icon2.png">开通会员</a>
+				</div>
+				<a class="btn-back home-back" href="#!home/home-html" style="display:none;"></a>
+			</div>
+			<div class="main">
+				<div class="ind-box">
+					<div class="wrap">
+						<div class="flex flex-wrap">
+							<div class="menu curr-box flex-8 f-26" data-currbox="b">
+								<a href="javascript:;" onclick="getFitHome()" class="f-b curr" id="b-0" data-right="c-0" data-down="b-1" data-up="aa-0">全部训练</a>
+								<a href="javascript:;" onclick="getGender()" class="f-b" id="b-1" data-right="c-0" data-down="b-2" data-up="b-0">健身男女</a>
+								<a href="javascript:;" onclick="getFitHistory()" class="f-b mine" id="b-2" data-right="c-0" data-up="b-1">我的训练</a>
+							</div>
+
+							<div class="flex-9 curr-box" data-currbox="c" id="fhome-div">
+							</div>
+
+							<div style="display: none;">
+								<script type="text/html" id="R-home-t">
+									<div class="home-list">
+										<div id="R-home" class="cf">
+											{{each data as e i}}
+											<div class="w">
+												<a href="#!list/course-html?ceng3" onclick="javascript:localStorage.setItem('classify','{{e.id}}');localStorage.setItem('current','全部训练-{{e.name}}')" class="item pr ovh" id="c-{{i}}" data-right="{{if i<4}}c-{{i+1}}{{/if}}" data-left="{{if i>0}}c-{{i-1}}{{else}}b-0{{/if}}" data-up="{{if i<3}}aa-0{{else}}c-{{i-2}}{{/if}}" data-down="{{if i>0&&i<3}}c-{{i+2}}{{/if}}">
+													<img src="{{imgpath}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
+													<span class="font pa">
+														<span class="f-28 dpb">{{e.fullname}}</span>
+														<em class="f-20">{{e.itemcount}}个训练</em>
+													</span>
+												</a>
+											</div>
+											{{/each}}
+										</div>
+									</div>
+								</script>
+							</div>
+
+							<div style="display: none;">
+								<script type="text/html" id="gender-list-t">
+									<div id="gender-list" class="gender-list flex flex-wrap curr-box flex-center mag-t-60">
+											{{each data as e i}}
+											<a href="#!list/gender-list-html?ceng3" onclick="javascript:localStorage.setItem('gender','{{e.id}}');localStorage.setItem('current','健身男女-{{e.fullname}}')" class="item pr dpb ovh" id="c-{{i}}" data-left="{{if i>0}}c-{{i-1}}{{else}}b-1{{/if}}" data-right="{{if i<1}}c-{{i+1}}{{/if}}" data-up="aa-0">
+												<img src="{{prefix}}{{e.cover}}" class="auto-img" onerror="lod(this)">
+												<span class="font pa f-middle">
+													<span class="dpb f-28 mag-b-5 ellipsis">{{e.fullname}}</span>
+													<em class="f-20">{{e.itemcount}}个训练</em>
+												</span>
+											</a>
+											{{/each}}
+									</div>
+								</script>
+							</div>
+							
+							<div style="display: none;">
+								<script type="text/html" id="my-list-t">
+									<div class="mag-l-50 list-list">
+										<div id="my-list" class="flex flex-wrap curr-box">
+											{{if data.length > 0}}
+												{{each data as e i}}
+												<div class="w flex-5">
+													<a href="javascript:;" class="play-item item pr dpb ovh" id="c-{{i}}" data-left="{{if i>0}}c-{{i-1}}{{else}}b-2{{/if}}" data-right="{{if i<9}}c-{{i+1}}{{/if}}" data-up="{{if i<5}}aa-0{{else}}c-{{i-5}}{{/if}}" data-down="{{if i<5}}{{if i<data.length-5}}c-{{i+5}}{{else}}ff-2{{/if}}{{else}}ff-2{{/if}}" onclick="setItem('{{e.albumid}}','{{e.played}}','{{e.title}}','{{e.paid}}',this)">
+														<img src="{{prefix}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
+														{{if e.paid=="0"}}
+														<span class="pa free"><img src="images/free.png" class="auto-img"></span>
+														{{/if}}
+														<span class="font pa">
+															<p class="dpb f-20 mag-b-5 ellipsis">{{e.title}}</p>
+															<span class="f-18">时间 <em class="viewTime">{{e.played}}</em></span>
+														</span>
+													</a>
+												</div>
+												{{/each}}
+												{{else}}
+												<div class="null-box flex-center flex-grow-1 flex-column">
+													<img src="images/nocont.png" alt="">
+													<p class="f-36 mag-t-50 c-fff">暂无内容</p>
+												</div>
+											{{/if}}
+										</div>
+									</div>
+								</script>
+							</div>
+								
+							<div id="fitPageList" style="position: relative;z-index: -5;">page容器防止丢失</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="popBox4">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32"></h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn">好的</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// 会员检测
+			globalAjaxC("fit/membership", {}, function(data) {
+				if (data.result == "true") {
+					localStorage.setItem("isLogin", "1");
+					localStorage.setItem("fitVip", "0");
+					var expire = data.data.enddate
+					var overtime
+					if (expire != null) {
+						expire = expire.replace(/-/g, "/");
+						var vipDate = new Date(expire);
+						var endDate = (new Date()).getTime();
+						var startDate = vipDate.getTime();
+						overtime = startDate - endDate
+						if (overtime > 0) {
+							localStorage.setItem("fitVip", "1");
+						} else {
+							localStorage.setItem("fitVip", "0");
+						}
+					} else {
+						localStorage.setItem("fitVip", "0");
+					}
+				} else {
+					localStorage.setItem("fitVip", "0");
+				}
+			})
+			// fit首页数据
+			getFitHome()
+
+			function getFitHome() {
+				globalAjaxC("fit/categories", {}, function(data) {
+					var datas = {
+						data: data.categories,
+						imgpath: data.prefix
+					}
+					var html = template("R-home-t", datas);
+					$("#fhome-div").html(html);
+					$(".home-list .w").eq(0).addClass('first')
+				})
+			}
+
+			function getGender() {
+				globalAjaxC("fit/genders", {}, function(data) {
+					var datas = {
+						data: data.genders,
+						prefix: data.prefix
+					}
+					var html = template("gender-list-t", datas)
+					$("#fhome-div").html(html)
+				})
+			}
+
+			function getFitHistory() {
+				if (localStorage.getItem("isLogin") != 1) {
+					popBox4("请先登录");
+					return false;
+				}
+
+				globalAjaxC("history/list?moduleid=fit", {}, function(data) {
+					//分页
+					let phtml = '<div id="mylistPage" class="page flex-center flex-shrink-0 mag-t-50 curr-box" data-currbox="ff" data-prevbox="c-0" data-page="page"></div>'
+					$("#fitPageList").html(phtml)
+					var itemlen = data.itemcount;
+					var page = Math.ceil(itemlen / 10);
+					var historyPageObj = new Page({
+						ele: "mylistPage",
+						page: page, // 总页数
+						changePage: function(page) { //改变分页回调
+							// console.log(page); // 页码
+							fitHistory(page);
+						}
+					});
+					fitHistory(1);
+					if (page <= 0) {
+						document.getElementById(historyPageObj.el).style.display = "none";
+					} else {
+						document.getElementById(historyPageObj.el).style.display = "flex";
+						
+					}
+				})
+			}
+
+			function fitHistory(page) { //分页切换调用
+				let offset = page - 1;
+				globalAjaxC("history/list?moduleid=fit&pageno=" + offset + "&pagesize=10", {}, function(data) {
+					var datas = {
+						data: data.history,
+						prefix: data.prefix
+					}
+					let pages = $("#mylistPage")
+					var html = template("my-list-t", datas);
+					$("#fhome-div").html(html);
+					$("#fhome-div").append(pages);
+					// pages.hide()
+					$(".viewTime").each(function() {
+						var viewTime = $(this).text()
+						$(this).html(secondToDate(viewTime))
+					});
+
+					if ($("#home-html .curr").length <= 0) {
+						$("#fhome-div #c-0").addClass('curr')
+					}
+				})
+			}
+
+			function setItem(id, played, title, paid, obj) {
+				var fitVip = localStorage.getItem("fitVip")
+				if (localStorage.getItem("isLogin") != 1) {
+					popBox4("请先登录");
+					return false;
+				}
+				if (fitVip == "0" && paid == "1") {
+					// mui.toast("请先开通会员");
+					popBox8("请先开通会员", $(obj))
+					return false;
+				}
+				localStorage.setItem("serno_played", "" + played);
+				localStorage.setItem("albumID", "" + id);
+				localStorage.setItem("current", "" + title);
+				Q.go("list/list-details-html?ceng4");
+			}
+
+			function popBox4(text) {
+				$("#home-html .curr").addClass("past-cur");
+				$("#home-html .curr").removeClass("curr")
+				$(".popBox4 .popCont .btn").addClass("curr");
+				$(".popBox4 .popCont h2").html(text);
+				$(".popBox4").show();
+			}
+
+			$(".popBox4 .popCont .btn").click(function() {
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$("#home-html .curr").removeClass("past-cur");
+				$(".popBox4 .popCont h2").html("")
+				$(".popBox4").hide();
+				$(".nav2")[0].click(); // 跳转登录页
+			});
+
+			$(document).on("keydown", function(e) {
+				if (e.keyCode == 10009) {
+					if ($(".popBox4").is(":visible")) {
+						$(".popBox4 .popCont .btn").removeClass("curr");
+						$(".past-cur").addClass("curr");
+						$("#home-html .curr").removeClass("past-cur");
+						$(".popBox4 .popCont h2").html("")
+						$(".popBox4").hide();
+					}
+				}
+			})
+		</script>
+	</div>
+</div>

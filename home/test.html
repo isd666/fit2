@@ -1,0 +1,39 @@
+<div>
+	<div id="test-html">
+		<div class="navBoxNew flex flex-center f-28 curr-box" data-currbox="aa">
+			<a href="javascript:;" onclick="setLocal()" class="curr nav mag-l-40 flex-center" id="aa-0" data-right="aa-1">储存local</a>
+			<a href="javascript:;" onclick="getLocal()" class="nav mag-l-40 flex-center" id="aa-1" data-right="aa-2" data-left="aa-0">获取local</a>
+			<a href="javascript:;" onclick="delLocal()" class="nav mag-l-40 flex-center" id="aa-2" data-right="aa-3" data-left="aa-1">删除local</a>
+			<a href="javascript:;" onclick="chgLocal()" class="nav mag-l-40 flex-center" id="aa-3" data-left="aa-2">更换local</a>
+		</div>
+		<div class="mag-t-40 f-40 cfff">
+			localStolage: <span class="local"></span>
+		</div>
+	</div>
+	<script>
+		var local = ''
+		function setLocal() {
+			localStorage.setItem('locals','存储')
+			local = localStorage.getItem('locals')
+			$('.local').text(local)
+			console.log('存储')
+		}
+		function getLocal() {
+			local = localStorage.getItem('locals')
+			$('.local').text(local)
+			console.log('获取')
+		}
+		function delLocal() {
+			localStorage.removeItem('locals')
+			local = localStorage.getItem('locals')
+			$('.local').text(local)
+			console.log('删除')
+		}
+		function chgLocal() {
+			localStorage.setItem('locals','更换')
+			local = localStorage.getItem('locals')
+			$('.local').text(local)
+			console.log('更换')
+		}
+	</script>
+</div>

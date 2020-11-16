@@ -1,0 +1,112 @@
+<div>
+	<div id="ehome-list-html">
+		<div class="codoon-box">
+			<div class="">
+				<a class="btn-back codoon-back" href="javascript:goBackEL();" style="display:none;"></a>
+			</div>
+			<div class="codoon-list pad-40 curr-box" data-currbox="b">
+				<div id="R-ehome-list" class="">
+					<script type="text/html" id="R-ehome-list-t">
+						<h2 class="white f-50 mag-b-20">{{category.fullname}}</h2>
+						<div class="w mag-b-40 flex flex-wrap jc-sb">
+							{{if length > 0}}
+							{{each data as m j}}
+							<a href="#!ehome/ehome-detail-html?ceng4" onclick="javascript:localStorage.setItem('albumid','{{m.id}}');" class="item pr ovh mag-b-40" id="b-{{j}}" data-right="{{if j < length-1}}b-{{j+1}}{{/if}}" data-left="{{if j>0}}b-{{j-1}}{{/if}}" data-up="{{if j>2}}b-{{j-3}}{{/if}}" data-down="{{if j < length-3}}b-{{j+3}}{{/if}}">
+								<img src="{{imgpath}}{{m.cover}}" class="ratio-img" onerror="lod(this)">
+								{{if m.paid=="1"}}
+								<img src="images/vip.png" class="pa free auto-img">
+								{{else}}
+								<img src="images/free.png" class="pa free auto-img">
+								{{/if}}
+								<!-- <span class="font pa f-50 dpb black">{{m.title}}</span> -->
+							</a>
+							{{/each}}
+							{{else}}
+							<div class="null-box flex-center flex-grow-1 flex-column">
+								<img src="images/nocont.png" alt="">
+								<p class="f-36 mag-t-50 c-fff">暂无内容</p>
+							</div>
+							{{/if}}
+							<a href="" style="width: 556px;"></a>
+							<a href="" style="width: 556px;"></a>
+						</div>
+					</script>
+				</div>
+			</div>
+		</div>
+
+		<div class="popBox4">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32"></h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn">好的</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var serno = localStorage.getItem('serno')
+			globalAjaxC("ehome/list?serno=" + serno + "&pagesize=9999", {}, function(data) {
+				var datas = {
+					data: data.albumlist,
+					category: data.category,
+					imgpath: data.prefix,
+					length: data.albumlist.length
+				}
+				var html = template("R-ehome-list-t", datas);
+				$("#R-ehome-list").html(html);
+				$("#R-ehome-list .w .item").eq(0).addClass('curr')
+			})
+
+			function popBox4(text) {
+				$("#ehome-list-html .curr").addClass("past-cur");
+				$("#ehome-list-html .curr").removeClass("curr")
+				$(".popBox4 .popCont .btn").addClass("curr");
+				$(".popBox4 .popCont h2").html(text);
+				$(".popBox4").show();
+			}
+
+			$(".popBox4 .popCont .btn").click(function() {
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$("#ehome-list-html .curr").removeClass("past-cur");
+				$(".popBox4 .popCont h2").html("")
+				$(".popBox4").hide();
+			});
+			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+			function goBackEL() {
+				if ($(".popBox4").is(":visible")) {
+					$(".popBox4 .popCont .btn").removeClass("curr");
+					$(".past-cur").addClass("curr");
+					$("#ehome-list-html .curr").removeClass("past-cur");
+					$(".popBox4 .popCont h2").html("")
+					$(".popBox4").hide();
+				} else {
+					history.go(-1)
+				}
+			}
+
+			$(document).on("keydown", function(e) {
+				if (e.keyCode == 10009) {
+					if ($(".popBox4").is(":visible")) {
+						$(".popBox4 .popCont .btn").removeClass("curr");
+						$(".past-cur").addClass("curr");
+						$("#ehome-list-html .curr").removeClass("past-cur");
+						$(".popBox4 .popCont h2").html("")
+						$(".popBox4").hide();
+					}
+				}
+				// 识别方向键, 定位元素
+				if (e.keyCode >= 37 && e.keyCode <= 40) {
+					if ($(".curr").eq(0).offset().top > 1080 - $(".curr").eq(0).height()) {
+						$("#ehome-list-html").scrollTop($("#ehome-list-html").scrollTop() + $(".curr").eq(0).offset().top - 40)
+					} else if ($(".curr").eq(0).offset().top < 0) {
+						$("#ehome-list-html").scrollTop($("#ehome-list-html").scrollTop() + $(".curr").eq(0).offset().top - 40)
+					}
+				}
+			})
+		</script>
+	</div>
+</div>

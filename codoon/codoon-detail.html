@@ -1,0 +1,167 @@
+<div>
+	<div id="codoon-detail-html">
+		<div class="course-box">
+
+			<div class="mag-r-50 f-20 curr-box back-btn flex curr-box" style="display: none;" data-currbox="btn">
+				<a href="javascript:;" onclick="goBackCD()" class="btn btn-back">返回</a>
+			</div>
+
+			<div class="">
+				<div class="pad-40">
+					<div class="">
+						<div class="course">
+							<div class="flex" id="codoon-info">
+								<script type="text/html" id="codoon-info-t">
+									<div class="course-img curr-box">
+											<img src="{{prefix}}{{album.bigimage}}" class="ratio-img" onerror="lod(this)">
+										</div>
+
+										<div class="codoon-info c-333">
+											<div class="pad-l-60">
+												<h2 class="f-50 f-b">{{album.title}}</h2>
+												<p class="f-30 mag-t-30">章节：共{{album.itemcount}}节</p>
+												<!-- <p class="f-30 mag-t-30">难度：{{album.difficulty}}</p> -->
+												<p class="f-30 mag-t-30">介绍：{{album.intro}}</p>
+												<div class="mag-t-20 flex f-40 curr-box" data-currbox="cc">
+													<a data-paid="{{contentlist[0].playable}}" data-id="{{contentlist[0].id}}" class="buy-play-btn curr c-333" id="cc-0" data-right="{{if vip == 0}}cc-1{{/if}}" data-down="dd-0" data-top="1">开始训练</a>
+													<a style="display: {{if vip == 1}}none{{else}}block{{/if}};" href="#!personal/vip-html?resh" onclick="javascript:;localStorage.setItem('moduleId','codoon');" class="buy-play-btn c-333" id="cc-1" data-left="cc-0" data-down="dd-0" data-top="1">购买会员</a>
+												</div>
+											</div>
+										</div>
+									</script>
+							</div>
+
+							<div class="course-list c-333">
+								<h2 class="f-56 mag-t-40 mag-b-40">章节列表</h2>
+								<div class="flex flex-wrap curr-box mag-r-026" id="codoon-detail" data-currbox="dd">
+									<script type="text/html" id="codoon-detail-t">
+										{{each data as e i}}
+										<div class="item flex-3">
+											<div class="mag-r-30 mag-b-30 pr">
+												<a data-paid="{{e.playable}}" data-id="{{e.id}}" id="dd-{{i}}" class="pr ovh" data-up="{{if i<3}}cc-0{{else}}dd-{{i-3}}{{/if}}" data-right="{{if i+1 < data.length}}dd-{{i+1}}{{/if}}" data-left="{{if i>0}}dd-{{i-1}}{{/if}}" data-down="{{if i<data.length-3}}dd-{{i+3}}{{/if}}">
+													<img src="{{prefix}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
+													{{if e.playable=="0" && vip!=1}}
+													<img src="images/vip.png" class="pa free auto-img">
+													{{else if vip!=1}}
+													<img src="images/free.png" class="pa free auto-img">
+													{{/if}}
+													<span class="font pa f-24 dpb f-right">{{e.title}}</span>
+												</a>
+											</div>
+										</div>
+										{{/each}}
+									</script>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="popBox16">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32"></h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn">好的</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var albumid = localStorage.getItem('albumid');
+			var isLogin = localStorage.getItem("isLogin")
+			var codoonVip = localStorage.getItem("codoonVip")
+			globalAjaxC("codoon/detail?albumid=" + albumid, {}, function(data) {
+				data.vip = codoonVip
+				var html = template("codoon-info-t", data);
+				$("#codoon-info").html(html);
+				var datas = {
+					data: data.contentlist,
+					prefix: data.prefix,
+					vip: codoonVip
+				}
+				var html2 = template("codoon-detail-t", datas);
+				$("#codoon-detail").html(html2);
+
+				$(".course .course-list .item").each(function() {
+					var time = $(this).find('.font span em').text();
+					$(this).find('.font span em').html(secondToTime(time) + "分钟")
+				})
+
+				$("#codoon-detail .item a").click(function() {
+					var paid = $(this).data("paid")
+					var contentId = $(this).data("id")
+					if (paid == "1") {
+						localStorage.setItem('contentId', contentId)
+						Q.go("codoon/codoon-video-html?ceng4");
+					} else if (codoonVip == "1") {
+						localStorage.setItem('contentId', contentId)
+						Q.go("codoon/codoon-video-html?ceng4");
+					} else if (codoonVip == "0") {
+						popBox16("请先开通会员", $(this))
+					} else {
+						popBox16("请先登录", $(this))
+					}
+				})
+				$("#cc-0").click(function(){
+					var paid = $(this).data("paid")
+					var hId = $(this).data("id")
+					if(codoonVip == "0" && paid == "0"){
+						popBox16("请先开通会员", $(this))
+					} else {
+						localStorage.setItem('contentId', hId)
+						Q.go("codoon/codoon-video-html?ceng4");
+					}
+				})
+			})
+			function popBox16(text, obj) {
+				obj.addClass("past-cur");
+				obj.removeClass("curr")
+				$(".popBox16 .popCont .btn").addClass("curr");
+				$(".popBox16 .popCont h2").html(text);
+				$(".popBox16").show();
+			}
+
+			$(".popBox16 .popCont .btn").click(function() {
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$(".past-cur").removeClass("past-cur");
+				$(".popBox16 .popCont h2").html("")
+				$(".popBox16").hide();
+				// 跳转登录
+				localStorage.setItem('moduleId', 'codoon')
+				$("#cc-1")[0].click();
+			});
+			
+			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+			function goBackCD(){
+				if ($(".popBox16").is(":visible")) {
+					$(".popBox16 .popCont .btn").removeClass("curr");
+					$(".past-cur").addClass("curr");
+					$(".past-cur").removeClass("past-cur");
+					$(".popBox16 .popCont h2").html("")
+					$(".popBox16").hide();
+				} else {
+					history.go(-1)
+				}
+			}
+			$(document).on("keydown", function(e) {
+				// 识别方向键, 定位元素
+				if (e.keyCode >= 37 && e.keyCode <= 40) {
+					if($(".curr").data("top")){
+						$("#codoon-detail-html").scrollTop(0)
+					}
+					let curr = $(".curr").eq(0)
+					if (curr.offset().top > (1080 - curr.height())) {
+						$("#codoon-detail-html").scrollTop($("#codoon-detail-html").scrollTop() + curr.offset().top - 40)
+					} else if (curr.offset().top < 0) {
+						$("#codoon-detail-html").scrollTop($("#codoon-detail-html").scrollTop() + curr.offset().top - 40)
+					}
+				}
+			})
+		</script>
+	</div>
+</div>

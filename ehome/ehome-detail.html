@@ -1,0 +1,203 @@
+<div>
+	<div id="ehome-detail-html">
+		<div class="course-box">
+
+			<div class="mag-r-50 f-20 curr-box back-btn flex curr-box" style="display: none;" data-currbox="btn">
+				<a href="javascript:goBackED();" class="btn btn-back">返回</a>
+			</div>
+
+			<div class="">
+				<div class="pad-40">
+					<div class="">
+						<div class="course">
+							<div class="flex" id="ehome-info">
+								<script type="text/html" id="ehome-info-t">
+									<div class="course-img curr-box">
+											<img src="{{prefix}}{{album.bigimage}}" class="ratio-img" onerror="lod(this)">
+										</div>
+
+										<div class="ehome-info c-333">
+											<div class="pad-l-60">
+												<h2 class="f-50 f-b">{{album.title}}</h2>
+												<p class="f-30 mag-t-30">{{album.intro}}</p>
+												<div class="pad-20 f-30 flex center">
+													<div class="mag-r-40">
+														<div class="mag-b-10">燃脂</div>
+														<div>{{album.calorie}}<span class="f-26">千卡</span></div>
+													</div>
+													<div class="mag-r-40">
+														<div class="mag-b-10">时长</div>
+														<div>{{album.duration}}<span class="f-26">分钟</span></div>
+													</div>
+													<div class="mag-r-40">
+														<div class="mag-b-10">难度</div>
+														<div>{{album.difficulty}}</div>
+													</div>
+												</div>
+												<div class="mag-t-20 flex f-40 curr-box" data-currbox="cc">
+													<a data-paid="{{contentlist[0].playable}}" data-id="{{contentlist[0].id}}" class="buy-play-btn curr c-333" id="cc-0" data-right="cc-1" data-down="dd-0" data-top="1">开始训练</a>
+													<a style="display: {{if vip == 1}}none{{else}}block{{/if}};" href="#!personal/vip-html?resh" onclick="javascript:localStorage.setItem('moduleId','ehome')" class="buy-play-btn c-333" id="cc-1" data-left="cc-0" data-down="dd-0" data-top="1">购买会员</a>
+												</div>
+											</div>
+										</div>
+									</script>
+							</div>
+
+							<div class="course-list c-333">
+								<h2 class="f-56 mag-t-40 mag-b-40">章节列表</h2>
+								<div class="flex flex-wrap curr-box mag-r-026" id="ehome-detail" data-currbox="dd">
+									<script type="text/html" id="ehome-detail-t">
+										{{each data as e i}}
+										<div class="item flex-3">
+											<div class="mag-r-30 mag-b-30 pr">
+												<a data-paid="{{e.playable}}" data-id="{{e.id}}" id="dd-{{i}}" class="pr ovh" data-up="{{if i<3}}cc-0{{else}}dd-{{i-3}}{{/if}}" data-right="{{if i < data.length-1}}dd-{{i+1}}{{/if}}" data-left="{{if i>0}}dd-{{i-1}}{{/if}}" data-down="{{if i < data.length-3}}dd-{{i+3}}{{/if}}">
+													<img src="{{prefix}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
+													{{if e.playable=="0" && vip!=1}}
+													<img src="images/vip.png" class="pa free auto-img">
+													{{else if vip!=1}}
+													<img src="images/free.png" class="pa free auto-img">
+													{{/if}}
+												</a>
+											</div>
+										</div>
+										{{/each}}
+									</script>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="popBox9">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32"></h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn">好的</div>
+					</div><strong></strong>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var albumid = localStorage.getItem('albumid');
+			var ehomeVip = localStorage.getItem("ehomeVip")
+
+			globalAjaxC("ehome/detail?albumid=" + albumid, {}, function(data) {
+				data.vip = ehomeVip
+				var html = template("ehome-info-t", data);
+				$("#ehome-info").html(html);
+				// data.contentlist.forEach( item => {
+				// 	item.paid = data.album.paid
+				// })
+				for (let i = 0; i < data.contentlist.length; i++) {
+					data.contentlist[i].paid = data.album.paid
+				}
+				var datas = {
+					data: data.contentlist,
+					prefix: data.prefix,
+					vip: ehomeVip
+				}
+				var html2 = template("ehome-detail-t", datas);
+				$("#ehome-detail").html(html2);
+
+				$(".course .course-list .item").each(function() {
+					var time = $(this).find('.font span em').text();
+					$(this).find('.font span em').html(secondToTime(time) + "分钟")
+				})
+				// 点击播放
+				$("#ehome-detail .item a").click(function() {
+					var paid = $(this).data("paid")
+					var contentId = $(this).data("id")
+					if (paid == "1") {
+						localStorage.setItem('contentId', contentId)
+						Q.go("ehome/ehome-video-html?ceng6");
+					} else if (ehomeVip == "1") {
+						localStorage.setItem('contentId', contentId)
+						Q.go("ehome/ehome-video-html?ceng6");
+					} else if (ehomeVip == "0") {
+						popBox9("请先开通会员", $(this))
+					} else {
+						popBox9("请先登录", $(this))
+					}
+				})
+				$("#cc-0").click(function() {
+					var paid = $(this).data("paid")
+					var hId = $(this).data("id")
+					if (ehomeVip == "0" && paid == "0") {
+						popBox9("请先开通会员", $(this))
+					} else {
+						localStorage.setItem('contentId', hId)
+						Q.go("ehome/ehome-video-html?ceng6");
+					}
+				})
+			})
+			// 开始训练
+			function startEhome(paid, that) {
+				if (ehomeVip == "0" && paid == "1") {
+					popBox9("请先开通会员", $(that))
+				} else {
+					$("#ehome-detail .item a")[0].click()
+				}
+			}
+
+			function popBox9(text, obj) {
+				obj.addClass("past-cur");
+				obj.removeClass("curr")
+				$(".popBox9 .popCont .btn").addClass("curr");
+				$(".popBox9 .popCont h2").html(text);
+				$(".popBox9").show();
+			}
+
+			$(".popBox9 .popCont .btn").click(function() {
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$(".past-cur").removeClass("past-cur");
+				$(".popBox9 .popCont h2").html("")
+				$(".popBox9").hide();
+				// 跳转登录页
+				localStorage.setItem('moduleId', 'ehome')
+				// $("#btn-login")[0].click();
+				Q.go("personal/vip-html?resh")
+			});
+
+			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+			function goBackED() {
+				if ($(".popBox9").is(":visible")) {
+					$(".popBox9 .popCont .btn").removeClass("curr");
+					$(".past-cur").addClass("curr");
+					$("#ehome-detail-html .curr").removeClass("past-cur");
+					$(".popBox9 .popCont h2").html("")
+					$(".popBox9").hide();
+				} else {
+					history.go(-1)
+				}
+			}
+			$(document).on("keydown", function(e) {
+				if (e.keyCode == 10009) {
+					if ($(".popBox9").is(":visible")) {
+						$(".popBox9 .popCont .btn").removeClass("curr");
+						$(".past-cur").addClass("curr");
+						$(".past-cur").removeClass("past-cur");
+						$(".popBox9 .popCont h2").html("")
+						$(".popBox9").hide();
+					}
+				}
+				// 识别方向键, 定位元素
+				if (e.keyCode >= 37 && e.keyCode <= 40) {
+					if ($(".curr").data("top")) {
+						$("#ehome-detail-html").scrollTop(0)
+					}
+					let curr = $(".curr").eq(0)
+					if (curr.offset().top > (1080 - curr.height())) {
+						$("#ehome-detail-html").scrollTop($("#ehome-detail-html").scrollTop() + curr.offset().top - 40)
+					} else if (curr.offset().top < 0) {
+						$("#ehome-detail-html").scrollTop($("#ehome-detail-html").scrollTop() + curr.offset().top - 40)
+					}
+				}
+			})
+		</script>
+	</div>
+</div>

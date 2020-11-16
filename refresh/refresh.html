@@ -1,0 +1,17 @@
+<div>
+    <div id="refresh-html">
+        <div class="refresh-box flex-center flex-grow-1 flex-column curr-box">           
+			<img src="./images/null_wifi.png">
+			<p class="f-24 mag-t-30">网路异常，请检查网络或重新加载~</p>
+			<div class="refreshBtn f-24 curr" id="refreshBtn">请刷新</div>	
+		</div>
+		<script>
+		$(".refreshBtn").on("click",function(){
+            //mui.alert("刷新成功");     
+            if(window.navigator.onLine==true){
+            	Q.go("home/home-html");
+            }
+        })
+		</script>
+    </div>
+</div>

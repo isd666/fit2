@@ -1,0 +1,168 @@
+<div>
+	<div id="gender-list-html">
+		<div class="gender-list-box">
+			<div class="header flex jc-sb flex-center bn">
+				<div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div>
+				<div class="current c-yellow f-26 pa"></div>
+
+				<div class="mag-r-50 f-20 curr-box back-btn flex">
+					<a href="javascript:history.go(-1);" class="btn btn-back" id="back" style="display: none;" data-down="ee-0">返回</a>
+					<a href="#!personal/vip-html?resh" class="goVip" style="display: none;"></a>
+				</div>
+			</div>
+			<div class="main">
+				<div class="ind-box">
+					<div class="wrap">
+						<div class="flex-center">
+
+							<div class="list-list flex-9 mag-t-20">
+
+								<div id="sex-list" class="flex flex-wrap curr-box" data-currbox="c">
+									<script type="text/html" id="sex-list-t">
+										{{if data.length > 0}}
+										{{each data as e i}}
+										<div class="w flex-5">
+											<a data-id="{{e.id}}" data-paid="{{e.paid}}" class="play-item item pr dpb ovh" id="ee-{{i}}" data-left="{{if i>0}}ee-{{i-1}}{{/if}}" data-right="{{if i<9}}ee-{{i+1}}{{/if}}" data-up="{{if i>4}}ee-{{i-5}}{{/if}}" data-down="{{if i<5}}{{if i<data.length-5}}ee-{{i+5}}{{else}}ff-2{{/if}}{{else}}ff-2{{/if}}">
+												<img src="{{prefix}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
+												{{if e.paid=="0"}}
+												<img src="images/free.png" class="pa free auto-img">
+												{{else}}
+												<img src="images/vip.png" class="pa free auto-img">
+												{{/if}}
+												<span class="font pa">
+													<p class="f-20 mag-b-5 ellipsis">{{e.title}}</p>
+													<span class="f-18">运动时长 <em>{{e.duration}}</em></span>
+												</span>
+											</a>
+										</div>
+										{{/each}}
+										{{else}}
+										<div class="null-box flex-center flex-grow-1 flex-column">
+											<img src="images/nocont.png" alt="">
+											<p class="f-36 mag-t-50 c-fff">暂无内容</p>
+										</div>
+										{{/if}}
+									</script>
+								</div>
+
+								<div id="genderlistPage" class="page flex-center flex-shrink-0 mag-t-80 curr-box" data-currbox="ff"
+								 data-prevbox="ee-0" data-page="page">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="popBox7">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32"></h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn">好的</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var gender = localStorage.getItem('gender');
+			var fitVip = localStorage.getItem("fitVip");
+			//创建分页
+			globalAjaxC("fit/list?gender=" + gender, {}, function(data) {
+				//分页
+				var itemlen = data.itemcount;
+
+				var page = Math.ceil(itemlen / 10);
+				//console.log(page)
+				var genderlistPage = new Page({
+					ele: "genderlistPage",
+					page: page, // 总页数
+					changePage: function(page) { //改变分页回调
+						ajax(page);
+					}
+				});
+				$("#gender-list-html .current").html(localStorage.getItem("current"));
+
+				if (page <= 0) {
+					document.getElementById(genderlistPage.el).parentNode.style.display = "none";
+				} else {
+					document.getElementById(genderlistPage.el).parentNode.style.display = "block";
+				}
+			})
+			ajax(1); // 初始化
+			function ajax(page) { //分页切换调用
+				var offset = page - 1;
+				globalAjaxC("fit/list?gender=" + gender + "&pageno=" + offset + "&pagesize=10", {}, function(data) {
+					var datas = {
+						data: data.albumlist,
+						prefix: data.prefix
+					}
+					var html = template("sex-list-t", datas);
+					$("#sex-list").html(html);
+
+					$("#sex-list .item").each(function() {
+						var time = $(this).find('.font span em').text();
+						$(this).find('.font span em').html(secondToTime(time) + "分钟")
+					})
+
+					if (offset == "0" && $(".gender-list-box .curr").length == 0) {
+						if (datas.data.length > 0) {
+							$("#sex-list .w").first().find("a.item").addClass("curr");
+						} else {
+							$(".gender-list-box .btn-back").addClass("curr");
+						}
+					}
+					let isLogin = localStorage.getItem("isLogin")
+					$("#sex-list a.item").off().on("click", function() {
+						var paid = $(this).data("paid");
+						var albumID = $(this).data("id");
+						if (paid == "0") {
+							localStorage.setItem('albumID', albumID);
+							Q.go("list/list-details-html?ceng4");
+						} else if (isLogin != 1) {
+							popBox7("请先登录", $(this))
+						} else if (fitVip == "1") {
+							localStorage.setItem('albumID', albumID)
+							Q.go("list/list-details-html?ceng4");
+						} else if (fitVip == "0") {
+							popBox7("请先开通会员", $(this))
+						}
+					})
+				})
+			}
+
+			function popBox7(text, obj) {
+				obj.addClass("past-cur");
+				obj.removeClass("curr")
+				$(".popBox7 .popCont .btn").addClass("curr");
+				$(".popBox7 .popCont h2").html(text);
+				$(".popBox7").show();
+			}
+
+			$(".popBox7 .popCont .btn").click(function() {
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$(".past-cur").removeClass("past-cur");
+				$(".popBox7 .popCont h2").html("")
+				// 跳转登录页
+				localStorage.setItem('moduleId', 'fit')
+				$(".goVip")[0].click(); 
+			});
+
+
+			$(document).on("keydown", function(e) {
+				if (e.keyCode == 10009) {
+					if ($(".popBox7").is(":visible")) {
+						$(".popBox7 .popCont .btn").removeClass("curr");
+						$(".past-cur").addClass("curr");
+						$(".past-cur").removeClass("past-cur");
+						$(".popBox7 .popCont h2").html("")
+						$(".popBox7").hide();
+					}
+				}
+			})
+		</script>
+	</div>
+</div>

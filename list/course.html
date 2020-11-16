@@ -1,0 +1,154 @@
+<div>
+	<div id="course-html">
+		<div class="course-box">
+			<div class="header flex jc-sb flex-center bn">
+				<div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div>
+				<div class="current c-yellow f-26 pa"></div>
+
+				<div class="mag-r-50 f-20 curr-box back-btn flex curr-box" style="display: none;" data-currbox="btn">
+					<a href="#!personal/vip-html?resh" id="course-vip"></a>
+					<a href="javascript:history.go(-1);" class="btn btn-back" >返回</a>
+				</div>
+			</div>
+
+			<div class="main2">
+				<div class="wrap">
+					<div class="flex-center">
+						<div class="flex-9">
+							<div class="course">
+								<div class="flex" id="course-info">
+									<script type="text/html" id="course-info-t">
+										<div class="course-img curr-box">
+											<img src="{{prefix}}{{category.bigimage}}" class="ratio-img" onerror="lod(this)">
+										</div>
+
+										<div class="course-info c-fff">
+											<div class="pad-l-60">
+												<h2 class="f-36 ellipsis">{{category.fullname}}</h2>
+												<h3 class="f-28 mag-t-50">课程共{{category.itemcount}}节</h3>
+												<p class="f-26 mag-t-30">{{category.intro}}</p>
+
+												<div class="mag-t-40 flex f-26 curr-box" data-currbox="cc">
+													<a  href="#!list/course-list-html?ceng3" onclick="javascript:localStorage.setItem('gender','m')" class="sex-btn" id="cc-0" data-right="cc-1" data-down="dd-0">男士训练</a>
+													<a  href="#!list/course-list-html?ceng3" onclick="javascript:localStorage.setItem('gender','f')" class="sex-btn" id="cc-1" data-left="cc-0" data-down="dd-0">女士训练</a>
+												</div>
+											</div>
+										</div>    
+									</script>
+								</div>
+
+								<div class="course-list c-fff">
+									<h2 class="f-36 mag-t-30 mag-b-30">训练安排</h2>
+									<div class="flex flex-wrap curr-box mag-r-026" id="train" data-currbox="dd">
+										<script type="text/html" id="train-t">
+											{{each data as e i}}
+											<div class="item flex-5">
+												<div class="mag-r-20 pr">
+													<a data-paid="{{e.paid}}" data-id="{{e.id}}" id="dd-{{i}}" class="pr {{if i<1}}curr{{/if}}" data-up="cc-0" data-right="{{if i<4}}dd-{{i+1}}{{/if}}" data-left="{{if i>0}}dd-{{i-1}}{{/if}}">
+														<img src="{{prefix}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
+														{{if e.paid=="0"}}
+														<img src="images/free.png" class="pa free auto-img">
+														{{else}}
+														<img src="images/vip.png" class="pa free auto-img">
+														{{/if}}
+													</a>
+													<div class="font pa">
+														<p class="f-20 ellipsis mag-b-5">{{e.title}}</p>
+														<span class="f-18">运动时长 <em>{{e.duration}}</em></span>
+													</div>
+												</div>
+											</div>
+											{{/each}}
+											</script>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="popBox6">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32"></h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn">好的</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var classify = localStorage.getItem('classify');
+			var fitVip = localStorage.getItem("fitVip")
+			globalAjaxC("fit/list?categoryid=" + classify, {}, function(data) {
+				var html = template("course-info-t", data);
+				$("#course-info").html(html);
+
+				var datas = {
+					data: data.albumlist,
+					prefix: data.prefix
+				}
+				var html2 = template("train-t", datas);
+				$("#train").html(html2);
+
+				$("#course-html .current").text(localStorage.getItem('current'))
+				$(".course .course-list .item").each(function() {
+					var time = $(this).find('.font span em').text();
+					$(this).find('.font span em').html(secondToTime(time) + "分钟")
+				})
+				let isLogin = localStorage.getItem("isLogin")
+				$("#train .item a").click(function() {
+					var paid = $(this).data("paid")
+					var albumID = $(this).data("id")
+					if (paid == "0") {
+						localStorage.setItem('albumID', albumID)
+						Q.go("list/list-details-html?ceng3");
+					} else if (isLogin == "0") {
+						popBox6("请先登录", $(this))
+					} else if (fitVip == "1") {
+						localStorage.setItem('albumID', albumID)
+						Q.go("list/list-details-html?ceng3");
+					} else if (fitVip == "0") {
+						popBox6("请先开通会员", $(this))
+					} else {
+						popBox6("请先登录", $(this))
+					}
+				})
+			})
+			
+			function popBox6(text, obj) {
+				obj.addClass("past-cur");
+				obj.removeClass("curr")
+				$(".popBox6 .popCont .btn").addClass("curr");
+				$(".popBox6 .popCont h2").html(text);
+				$(".popBox6").show();
+			}
+
+			$(".popBox6 .popCont .btn").click(function() {
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$(".past-cur").removeClass("past-cur");
+				$(".popBox6 .popCont h2").html("")
+				$(".popBox6").hide();
+				// 跳转登录
+				localStorage.setItem('moduleId', 'fit')
+				$("#course-vip")[0].click()
+			});
+
+			$(document).on("keydown", function(e) {
+				if (e.keyCode == 10009) {
+					if ($(".popBox6").is(":visible")) {
+						$(".popBox6 .popCont .btn").removeClass("curr");
+						$(".past-cur").addClass("curr");
+						$(".past-cur").removeClass("past-cur");
+						$(".popBox6 .popCont h2").html("")
+						$(".popBox6").hide();
+					}
+				}
+			})
+		</script>
+	</div>
+</div>

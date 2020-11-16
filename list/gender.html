@@ -1,0 +1,109 @@
+<div>
+	<div id="sex-html">
+		<div class="sex-box">
+			<div class="header flex jc-sb flex-center">
+				<div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div>
+				<div class="navBox flex flex-center f-28 curr-box" data-currbox="aa">
+					<a href="#!list/fhome-html?ceng2" class="nav1 mag-r-50 flex-center" id="aa-0" data-right="aa-1" data-down="b-0"><img src="images/icon1.png">视频课程</a>
+					<a href="#!personal/vip-html?resh" class="nav2 mag-r-50 flex-center" id="aa-1" data-left="aa-0" data-down="b-0"><img
+						 src="images/icon2.png">开通会员</a>
+				</div>
+				<!-- <a href="javascript:history.go(-1);" class="btn btn-back" style="display:none;">返回</a> -->
+				<a class="btn-back home-back" href="#!home/home-html" style="display:none;"></a>
+			</div>
+			<div class="main">
+				<div class="ind-box">
+					<div class="wrap">
+						<div class="flex flex-wrap">
+							<div class="menu curr-box flex-8 f-26" data-currbox="b">
+								<a href="#!list/fhome-html?ceng2" class="f-b" id="b-0" data-right="c-0" data-down="b-1" data-up="aa-0">全部训练</a>
+								<a href="javascript:;" class="f-b curr" id="b-1" data-right="c-0" data-down="b-2" data-up="b-0">健身男女</a>
+								<a data-href="#!personal/my-list-html?ceng2" class="f-b mine" id="b-2" data-right="c-0" data-up="b-1">我的训练</a>
+							</div>
+
+							<div class="gender-list flex-9 mag-t-60">
+								<div id="gender-list" class="flex flex-wrap curr-box flex-center" data-currbox="c">
+									<script type="text/html" id="gender-list-t">
+										{{each data as e i}}
+										<a href="#!list/gender-list-html?ceng3" onclick="javascript:localStorage.setItem('gender','{{e.id}}');localStorage.setItem('current','健身男女-{{e.fullname}}')" class="item pr dpb ovh" id="c-{{i}}" data-left="{{if i>0}}c-{{i-1}}{{else}}b-1{{/if}}" data-right="{{if i<1}}c-{{i+1}}{{/if}}" data-up="aa-0">
+											<img src="{{prefix}}{{e.cover}}" class="auto-img" onerror="lod(this)">
+											<span class="font pa f-middle">
+												<span class="dpb f-28 mag-b-5 ellipsis">{{e.fullname}}</span>
+												<em class="f-20">{{e.itemcount}}个训练</em>
+											</span>
+										</a>
+										{{/each}}
+									</script>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="popBox5">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32"></h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn">好的</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+
+			globalAjaxC("fit/genders", {}, function(data) {
+				var datas = {
+					data: data.genders,
+					prefix: data.prefix
+				}
+				var html = template("gender-list-t", datas)
+				$("#gender-list").html(html)
+			})
+
+
+			$(".mine").off().on("click", function() {
+				if (localStorage.getItem("isLogin") == 1) {
+					var url = $(this).data("href");
+					Q.go("personal/my-list-html?ceng2");
+				} else {
+					popBox5("请先登录");
+				}
+			})
+
+			function popBox5(text) {
+				$("#sex-html .curr").addClass("past-cur");
+				$("#sex-html .curr").removeClass("curr")
+				$(".popBox5 .popCont .btn").addClass("curr");
+				$(".popBox5 .popCont h2").html(text);
+				$(".popBox5").show();
+			}
+
+			$(".popBox5 .popCont .btn").click(function() {
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$("#sex-html .curr").removeClass("past-cur");
+				$(".popBox5 .popCont h2").html("")
+				$(".popBox5").hide();
+				// 跳转登录页
+				localStorage.setItem('moduleId', 'fit')
+				$(".nav2")[0].click();
+			});
+
+			$(document).on("keydown", function(e) {
+				if (e.keyCode == 10009) {
+					if ($(".popBox5").is(":visible")) {
+						$(".popBox5 .popCont .btn").removeClass("curr");
+						$(".past-cur").addClass("curr");
+						$("#sex-html .curr").removeClass("past-cur");
+						$(".popBox5 .popCont h2").html("")
+						$(".popBox5").hide();
+					}
+				}
+			})
+		</script>
+	</div>
+</div>

@@ -1,0 +1,231 @@
+<div>
+	<div id="pay-html">
+		<div class="pay-box">
+      <a href="javascript:history.go(-1);" class="btn curr btn-back"></a>
+			<div class="headerNew flex jc-sb flex-center">
+				<div class="navBoxNew flex flex-center f-28 curr-box" data-currbox="ab">
+					<a href="#!list/fhome-html?ceng2" class="nav mag-l-40 flex-center" id="ab-0" data-right="ab-1"><img src="images/icon_fit.png"></a>
+					<a href="#!codoon/codoon-html?ceng2" class="nav mag-l-40 flex-center" id="ab-1" data-right="ab-2" data-left="ab-0"><img src="images/icon_codoon.png"></a>
+					<a href="#!ehome/ehome-html?ceng2" class="nav mag-l-40 flex-center" id="ab-2" data-right="ab-3" data-left="ab-1"><img src="images/icon_ehome.png"></a>
+					<a href="#!youth/youth-html?ceng2" class="nav mag-l-40 flex-center" id="ab-3" data-right="ab-4" data-left="ab-2"><img src="images/icon_youth.png"></a>
+					<a href="#!personal/vip-html?resh" class="curr nav mag-l-40 flex-center" id="ab-4" data-right="login" data-left="ab-3"><img src="images/icon_myVip.png"></a>
+				</div>
+
+				<div class="login mag-r-40 f-20 curr-box">
+
+				</div>
+			</div>
+			<!-- <div class="main"> -->
+			<div class="ind-box">
+				<div class="wrap">
+					<div class="pay c-fff">
+						<div class="person pa">
+							<div class="img"><img src="#" class="auto-img"></div>
+							<span class="f-22"></span>
+						</div>
+
+						<div class="pay-cont f-28">
+							<div class="item flex-center flex flex-wrap">
+								<div class="pic">
+									<div class="item item2 flex-center f-40 mag-b-20"><img class="mag-r-20" src="images/icon8.png">微信支付</div>
+									<div class="paycode">
+										<div id="paycode"></div>
+									</div>
+									<p class="mag-t-30">微信扫描二维码轻松支付</p>
+								</div>
+
+								<div class="font">
+									<h2><em class="f-70">hi</em>尊敬的 <span class="nickname"></span></h2>
+									<p>商品名称：<span class="shopName c-yellow"></span></p>
+									<span class="mag-t-20">付款金额：<em class="f-40 c-yellow orderPrice"></em>元</span>
+									<h2 class="mag-t-30 f-50">《服务说明》</h2>
+									<div class="mag-t-20 instructions">如果用户在使用APP试遇到任何问题都可以拨打服务热线：010-64473805或18612096929，进行咨询服务。</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- </div> -->
+				</div>
+			</div>
+		</div>
+
+
+
+		<div class="popBox">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32">您确认放弃此次购买吗</h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn" id="confirm1" data-right="confirm2">我再想想</div>
+						<div class="btn" id="confirm2" data-left="confirm1">去意已决</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="popBox3">
+			<div class="maskBg">
+				<div class="popCont middle">
+					<h2 class="f-32"></h2>
+					<div class="btnBox flex-center f-26">
+						<div class="btn">好的</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			baks2 = true
+			var cardid = localStorage.getItem('cardid')
+			var paycode = new QRCode(document.getElementById("paycode"), {
+				width: 500,
+				height: 500,
+				correctLevel: QRCode.CorrectLevel.M
+			});
+			//创建分页
+			globalAjaxC("user/status", {}, function(data) {
+				$(".vip-cont").css({
+					"display": "flex"
+				});
+				$(".person .img img").attr({
+					"src": data.user.avatar
+				});
+				$(".person span").text(data.user.nickname);
+				$(".nickname").text(data.user.nickname)
+				$("#pay-html .login").html(
+					'<a id="login" class="quit flex-center data-left="ab-4"><img class="login-avatar" src="' + data.user.avatar + '"><span>退出登录</span></a>'
+				);
+
+				$("#pay-html .quit").click(function() {
+					globalAjax("user/logout", {}, function(data) {
+						localStorage.removeItem("isLogin");
+						history.go(-1);
+					});
+				})
+			})
+
+			globalAjaxC("transaction/create?cardid=" + cardid, {}, function(data) {
+				//alert(JSON.stringify(data))
+				if (data.result == "true") {
+					var orderid = data.orderid;
+					paycode.makeCode(data.code_url);
+					orderpay(orderid);
+				}
+
+				if (data.result == "false") {
+					mui.toast(data.errmsg);
+					Q.go("personal/vip-html?resh")
+				}
+			})
+
+			globalAjaxC("card/detail?cardid=" + cardid, {}, function(data) {
+				$(".shopName").text(data.card.title)
+				$(".orderPrice").text(data.card.price)
+			})
+
+			//轮询检测订单是否支付
+			function orderpay(orderid) {
+				var i = 0;
+				var bb = setInterval(function() {
+					if (location.href.split("#!")[1].substr(0, 17) != "personal/pay-html") {
+						clearInterval(bb);
+						return false;
+					}
+					i++;
+					$.ajax({
+						url: "http://api.dig24.cn/fit2/public/transaction/status?orderid=" + orderid + "&ver=" + Math.random(),
+						type: "get",
+						dataType: "text",
+						success: function(data) {
+
+							mui.hideLoading(); //隐藏后的回调函数
+							data = JSON.parse(data);
+							if (data.status == "1") { //已登录
+								popBox3("支付成功~");
+								clearInterval(bb);
+								localStorage.setItem("vip", "1");
+								// $("#ab-4")[0].click()
+								// $("#vip-html .header .navBox a").eq("1").addClass("curr");
+								// globalAjax("member/index",{},function(data){
+								//     var html2=template("vip-buy-t",data)
+								//     $("#vip-card").html(html2)
+								//     $("#vip-card .term").text(data.member.enddate)
+								//     $("#vip-card .ecover").attr("src",data.prefix+data.card.cover)
+								//     $("#vip-card .etitle").text(data.card.title)
+								//     $("#vip-card .eprice").text(data.card.price)
+								//     $("#vip-card .promotion").text(data.card.promotion)
+								//     if (data.card.id<3) {
+								//         $("#vip-card .item").addClass("c-000")
+								//     }else{
+								//         $("#vip-card .item").addClass("c-gold")
+								//     }
+								// })
+							}
+							if (data.status == "0") { //未支付
+								if (i >= 300) {
+									popBox3("支付超时，请重试~");
+									clearInterval(bb);
+								}
+							}
+						}
+					})
+				}, 1000);
+			}
+
+			//微信支付宝切换，暂时只有微信
+			// $(function(){
+			//     $(".pay .pay-tabs .item").click(function(){
+			//         var num = $(this).index();
+			//         $(".pay .pay-cont .item").hide();
+			//         $(".pay .pay-cont .item").eq(num).css({"display":"flex"});
+			//     })
+			//     $(".pay .pay-tabs .item").eq(0).click();
+			// })
+
+			function popBox3(text) {
+				$("#pay-html .back-btn .btn").addClass("past-cur");
+				$("#pay-html .curr").removeClass("curr")
+				$(".popBox3 .popCont .btn").addClass("curr");
+				$(".popBox3 .popCont h2").html(text);
+				$(".popBox3").show();
+			}
+
+			$(".popBox3 .popCont .btn").click(function() {
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$("#pay-html .curr").removeClass("past-cur");
+				$(".popBox3 .popCont h2").html("")
+				$(".popBox3").hide();
+				// history.go(-1);
+				$("#ab-4")[0].click()
+			});
+
+			$("#confirm1").click(function() {
+				baks2 = true;
+				$(".popBox").hide();
+				$(this).removeClass("curr");
+				$(".past-cur").addClass("curr");
+				$("#pay-html .curr").removeClass("past-cur");
+			});
+
+			$("#confirm2").click(function() {
+				baks2 = true;
+				history.go(-1);
+			});
+
+			$(document).on("keydown", function(e) {
+				if (e.keyCode == 10009) {
+
+					if ($(".popBox3").is(":visible")) {
+						$(".popBox3 .popCont .btn").removeClass("curr");
+						$(".past-cur").addClass("curr");
+						$("#pay-html .curr").removeClass("past-cur");
+						$(".popBox3 .popCont h2").html("")
+						$(".popBox3").hide();
+						history.go(-1);
+					}
+				}
+			})
+		</script>
+	</div>
+</div>

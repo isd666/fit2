@@ -1,0 +1,161 @@
+<div>
+	<div id="list-detail-html">
+		<div class="list-detail-box">
+			<div class="header flex jc-sb flex-center bn">
+				<div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div>
+				<div class="current c-yellow f-26 pa"></div>
+
+				<div class="mag-r-50 f-20 curr-box back-btn flex" style="display: none;">
+					<!-- <a href="javascript:;" class="btn">购买会员</a> -->
+					<a class="btn btn-back" id="back3" data-down="video">返回</a>
+				</div>
+			</div>
+
+			<div class="pt128">
+				<div class="wrap">
+					<div class="flex-center">
+						<div class="w1376">
+							<div class="video-play">
+								<div class="video curr-box">
+									<video poster="" autoplay="autoplay" controls="controls" id="fit-video" class="curr" src="" type="video/mp4">
+									</video>
+								</div>
+
+								<div class="video-info c-fff mag-t-30" id="video-play">
+									<script type="text/html" id="video-play-t">
+										<h2 class="f-30">{{data.title}}</h2>
+										<p class="f-22 mag-t-20">{{data.intro}}</p>
+									</script>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var player = $("#fit-video");
+			var albumID = localStorage.getItem("albumID");
+			var contentid
+			var ww = $(window).width(),
+				wh = $(window).height();
+			var videoBool = true
+			globalAjaxC("fit/video?albumid=" + albumID, {}, function(data) {
+				var videourl = data.data.video
+				var videoimg = data.prefix + data.data.cover
+				contentid = data.data.id
+				var html = template("video-play-t", data);
+				$("#video-play").html(html);
+
+				player[0].poster = videoimg
+				player[0].src = videourl
+
+				$("#list-detail-html .current").text(localStorage.getItem('current'))
+						mui.showLoading("正在加载..", "div");
+				video.addEventListener('loadedmetadata', function() {
+					if (localStorage.getItem("serno_played") != null) {
+						var playedTime = localStorage.getItem("serno_played")
+						player[0].currentTime = playedTime;
+						if(player[0].duration-1 <= playedTime) {
+							player[0].currentTime = 0
+						}
+						localStorage.setItem("serno_played",0)
+					}
+
+					// setTimeout(function(event) {
+					// 	if ($("#video").length > 0) {
+					// 		player[0].play();
+					// 	}
+					// }, 800)
+				}, false)
+					video.addEventListener('waiting', function () { //加载
+						mui.showLoading("正在加载..", "div");
+					},false)
+					video.addEventListener('playing', function (e) { //播放中
+						mui.hideLoading()
+					},false);
+
+
+				$("#fit-video").click(function() {
+					if ($(".video").hasClass("fullScreen")) {
+						if (player.get(0).paused) {
+							player[0].play();
+							return false;
+						} else {
+							player[0].pause();
+							return false;
+						}
+					} else {
+						$(".video").addClass('fullScreen');
+						$(".video").css({
+							"width": ww + "px",
+							"height": wh + "px"
+						})
+					}
+				})
+
+				$(document).on("keydown", function(e) {
+					if ($(".video").hasClass("fullScreen") || $("#fit-video").hasClass("curr")) {
+						if (e.keyCode == 37) {
+							kuaitui(player)
+						}
+						if (e.keyCode == 39) {
+							kuaijin(player)
+						}
+					}
+				})
+			})
+
+			$("#back3").click(function() {
+				if (localStorage.getItem("isLogin") && localStorage.getItem("isLogin") == "1") {
+					var url = "history/update?contentid=" + contentid + "&played=" + Math.floor(player[0].currentTime);
+					globalAjaxD(url, {}, function(data) {
+						//alert(JSON.stringify(data))
+						if (localStorage.getItem("serno_played") != null) {
+							fitHistory(1)
+							localStorage.removeItem("serno_played")
+						}
+					}); // 更新播放进度
+				};
+
+				setTimeout(function() {
+					history.go(-1);
+				}, 200);
+			})
+
+			function kuaijin(player) { //快进
+				if (!isNaN(player[0].duration)) { //判断有播放状态
+					var currtime = player[0].currentTime;
+					currtime += 20;
+					//alert(currtime)
+					if (currtime > player[0].duration - 2 && currtime < player[0].duration + 20) {
+						currtime = player[0].duration - 2;
+					} else if (currtime >= player[0].duration + 20) {
+						mui.toast("没有更多视频了");
+						return false;
+					}
+					clearTimeout(kuaijin)
+					var kuaijin = setTimeout(function(event) {
+						player[0].currentTime = currtime;
+						player[0].play();
+					}, 800);
+				}
+			}
+
+			function kuaitui(player) { //快退
+				if (!isNaN(player[0].duration)) { //判断有播放状态
+					var currtime = player[0].currentTime
+					currtime -= 20
+					if (currtime < 0) {
+						currtime = 0
+					}
+					clearTimeout(kuaitui)
+					var kuaitui = setTimeout(function() {
+						player[0].currentTime = currtime;
+						player[0].play();
+					}, 800)
+				}
+			}
+		</script>
+	</div>
+</div>
