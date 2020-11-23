@@ -14,7 +14,7 @@
 									</video>
 								</div>
 
-								<div class="video-info c-fff mag-t-30" id="video-play">
+								<div class="video-info c-333 mag-t-30" id="video-play">
 									<script type="text/html" id="video-play-t">
 										<h2 class="f-30">{{data.title}}</h2>
 										<p class="f-22 mag-t-20">{{data.intro}}</p>
@@ -39,55 +39,60 @@
 		<script>
 			var player = $("#video");
 			var contentId = localStorage.getItem("contentId");
-			var videoId
+			var videoId;
 			var ww = $(window).width(),
 				wh = $(window).height();
-			var videoBool = true
-			var ehomeVip = localStorage.getItem("ehomeVip")
-			
-			getEhomeVideo(contentId)
-			function getEhomeVideo(contentId,vv=false) {
+			var videoBool = true;
+			var ehomeVip = localStorage.getItem("ehomeVip");
+			var albumId = '';
+			getEhomeVideo(contentId);
+
+			function getEhomeVideo(contentId) {
+				var vv = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 				globalAjaxC("ehome/video?contentid=" + contentId, {}, function(data) {
 					if (data.result == "false") {
-						popBox21('请开通会员。', $("#ehome-video-html .curr"))
-						return
+						popBox21('请开通会员。', $("#ehome-video-html .curr"));
+						return;
 					}
-					var videourl = data.data.video
-					videoId = data.data.id
-					var videoimg = data.prefix + data.data.cover
+
+					var videourl = data.data.video;
+					videoId = data.data.id;
+					albumId = data.data.albumid;
+					var videoimg = data.prefix + data.data.cover;
 					var html = template("video-play-t", data);
 					$("#video-play").html(html);
-						mui.showLoading("正在加载..", "div");
-					player[0].poster = videoimg
-					player[0].src = videourl
-					if(vv) return
+					player[0].poster = videoimg;
+					player[0].src = videourl;
+					mui.showLoading("正在加载..", "div");
+					if (vv) return;
 					video.addEventListener('loadedmetadata', function() {
 						if (localStorage.getItem("played") != null) {
-							var playedTime = localStorage.getItem("played")
+							var playedTime = localStorage.getItem("played");
 							player[0].currentTime = playedTime;
-							if(player[0].duration-1 <= playedTime) {
-								player[0].currentTime = 0
-							}
-							localStorage.setItem("played",0)
-						}
 
-						// setTimeout(function(event) {
+							if (player[0].duration - 1 <= playedTime) {
+								player[0].currentTime = 0;
+							}
+
+							localStorage.setItem("played", 0);
+						} // setTimeout(function(event) {
 						// 	if ($("#video").length > 0) {
 						// 		player[0].play();
 						// 	}
 						// }, 2000)
-					}, false)
 
-
+					}, false);
 					video.addEventListener('ended', function() {
-						getEhomeDetail()
-					},false)
-					video.addEventListener('waiting', function () { //加载
+						getEhomeDetail();
+					}, false);
+					video.addEventListener('waiting', function() {
+						//加载
 						mui.showLoading("正在加载..", "div");
-					},false)
-					video.addEventListener('playing', function (e) { //播放中
-						mui.hideLoading()
-					},false);
+					}, false);
+					video.addEventListener('playing', function(e) {
+						//播放中
+						mui.hideLoading();
+					}, false);
 					$("#video").click(function() {
 						if ($(".video").hasClass("fullScreen")) {
 							if (player.get(0).paused) {
@@ -102,44 +107,51 @@
 							$(".video").css({
 								"width": ww + "px",
 								"height": wh + "px"
-							})
+							});
 						}
-					})
-
+					});
 					$(document).on("keydown", function(e) {
 						if ($(".video").hasClass("fullScreen") || $("#video").hasClass("curr")) {
-							if (e.keyCode == 37) {
-								kuaitui(player)
+							if ($(".popCont .btn").hasClass('curr')) {
+								return;
 							}
+
+							if (e.keyCode == 37) {
+								kuaitui(player);
+							}
+
 							if (e.keyCode == 39) {
-								kuaijin(player)
+								kuaijin(player);
 							}
 						}
-					})
-				})
-			}
+					});
+				});
+			} // 播放完毕请求视频所属专辑
 
-			// 播放完毕请求视频所属专辑
+
 			function getEhomeDetail() {
 				globalAjaxC("ehome/detail?albumid=" + albumId, {}, function(data) {
-					let item = data.contentlist
-					for (let i = item.length; i--;) {
+					var item = data.contentlist;
+
+					for (var i = item.length; i--;) {
 						if (item[i].id == contentId) {
+							console.log('找到当前播放专辑');
+
 							if (i == item.length - 1) {
-								popBox21('已经是最后一集了', $("#ehome-video-html .curr"))
-								videoBool = false
+								popBox21('已经是最后一集了', $("#ehome-video-html .curr"));
+								videoBool = false;
 							} else {
 								if (item[i + 1].playable == 0 && ehomeVip == 0) {
-									popBox21('开通会员可观看下一集。', $("#ehome-video-html .curr"))
+									popBox21('开通会员可观看下一集。', $("#ehome-video-html .curr"));
 								} else {
-									contentId = item[i + 1].id
-									localStorage.setItem("contentId", contentId)
-									getEhomeVideo(contentId,true)
+									contentId = item[i + 1].id;
+									localStorage.setItem("contentId", contentId);
+									getEhomeVideo(contentId, true);
 								}
 							}
 						}
 					}
-				})
+				});
 			}
 
 			$("#back3").click(function() {
@@ -148,20 +160,21 @@
 					globalAjaxC(url, {}, function(data) {
 						//alert(JSON.stringify(data))
 						if (localStorage.getItem("played") != null) {
-							getEhomeHistory()
-							localStorage.removeItem("played")
+							getEhomeHistory();
+							localStorage.removeItem("played");
 						}
 					}); // 更新播放进度
-				};
+				}
 
+				;
 				setTimeout(function() {
 					history.go(-1);
 				}, 200);
-			})
+			});
 
 			function popBox21(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox21 .popCont .btn").addClass("curr");
 				$(".popBox21 .popCont h2").html(text);
 				$(".popBox21").show();
@@ -171,30 +184,32 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox21 .popCont h2").html("")
-				$(".popBox21").hide();
-				// 跳转登录页
-				if (videoBool) {
-					localStorage.setItem('moduleId', 'ehome')
-					Q.go("personal/vip-html?resh")
-				} else {
-					history.go(-1)
-				}
+				$(".popBox21 .popCont h2").html("");
+				$(".popBox21").hide(); // 跳转登录页
 
+				if (videoBool) {
+					localStorage.setItem('moduleId', 'ehome');
+					Q.go("personal/vip-html?resh");
+				} else {
+					history.go(-1);
+				}
 			});
 
-			function kuaijin(player) { //快进
-				if (!isNaN(player[0].duration)) { //判断有播放状态
+			function kuaijin(player) {
+				//快进
+				if (!isNaN(player[0].duration)) {
+					//判断有播放状态
 					var currtime = player[0].currentTime;
-					currtime += 20;
-					//alert(currtime)
+					currtime += 20; //alert(currtime)
+
 					if (currtime > player[0].duration - 2 && currtime < player[0].duration + 20) {
 						currtime = player[0].duration - 2;
 					} else if (currtime >= player[0].duration + 20) {
 						mui.toast("没有更多视频了");
 						return false;
 					}
-					clearTimeout(kuaijin)
+
+					clearTimeout(kuaijin);
 					var kuaijin = setTimeout(function(event) {
 						player[0].currentTime = currtime;
 						player[0].play();
@@ -202,18 +217,22 @@
 				}
 			}
 
-			function kuaitui(player) { //快退
-				if (!isNaN(player[0].duration)) { //判断有播放状态
-					var currtime = player[0].currentTime
-					currtime -= 20
+			function kuaitui(player) {
+				//快退
+				if (!isNaN(player[0].duration)) {
+					//判断有播放状态
+					var currtime = player[0].currentTime;
+					currtime -= 20;
+
 					if (currtime < 0) {
-						currtime = 0
+						currtime = 0;
 					}
-					clearTimeout(kuaitui)
+
+					clearTimeout(kuaitui);
 					var kuaitui = setTimeout(function() {
 						player[0].currentTime = currtime;
 						player[0].play();
-					}, 800)
+					}, 800);
 				}
 			}
 		</script>

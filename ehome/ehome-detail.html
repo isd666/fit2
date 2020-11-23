@@ -83,69 +83,70 @@
 
 		<script>
 			var albumid = localStorage.getItem('albumid');
-			var ehomeVip = localStorage.getItem("ehomeVip")
-
+			var ehomeVip = localStorage.getItem("ehomeVip");
 			globalAjaxC("ehome/detail?albumid=" + albumid, {}, function(data) {
-				data.vip = ehomeVip
+				data.vip = ehomeVip;
 				var html = template("ehome-info-t", data);
-				$("#ehome-info").html(html);
-				// data.contentlist.forEach( item => {
+				$("#ehome-info").html(html); // data.contentlist.forEach( item => {
 				// 	item.paid = data.album.paid
 				// })
-				for (let i = 0; i < data.contentlist.length; i++) {
-					data.contentlist[i].paid = data.album.paid
+
+				for (var i = 0; i < data.contentlist.length; i++) {
+					data.contentlist[i].paid = data.album.paid;
 				}
+
 				var datas = {
 					data: data.contentlist,
 					prefix: data.prefix,
 					vip: ehomeVip
-				}
+				};
 				var html2 = template("ehome-detail-t", datas);
 				$("#ehome-detail").html(html2);
-
 				$(".course .course-list .item").each(function() {
 					var time = $(this).find('.font span em').text();
-					$(this).find('.font span em').html(secondToTime(time) + "分钟")
-				})
-				// 点击播放
+					$(this).find('.font span em').html(secondToTime(time) + "分钟");
+				}); // 点击播放
+
 				$("#ehome-detail .item a").click(function() {
-					var paid = $(this).data("paid")
-					var contentId = $(this).data("id")
+					var paid = $(this).data("paid");
+					var contentId = $(this).data("id");
+
 					if (paid == "1") {
-						localStorage.setItem('contentId', contentId)
+						localStorage.setItem('contentId', contentId);
 						Q.go("ehome/ehome-video-html?ceng6");
 					} else if (ehomeVip == "1") {
-						localStorage.setItem('contentId', contentId)
+						localStorage.setItem('contentId', contentId);
 						Q.go("ehome/ehome-video-html?ceng6");
 					} else if (ehomeVip == "0") {
-						popBox9("请先开通会员", $(this))
+						popBox9("请先开通会员", $(this));
 					} else {
-						popBox9("请先登录", $(this))
+						popBox9("请先登录", $(this));
 					}
-				})
+				});
 				$("#cc-0").click(function() {
-					var paid = $(this).data("paid")
-					var hId = $(this).data("id")
+					var paid = $(this).data("paid");
+					var hId = $(this).data("id");
+
 					if (ehomeVip == "0" && paid == "0") {
-						popBox9("请先开通会员", $(this))
+						popBox9("请先开通会员", $(this));
 					} else {
-						localStorage.setItem('contentId', hId)
+						localStorage.setItem('contentId', hId);
 						Q.go("ehome/ehome-video-html?ceng6");
 					}
-				})
-			})
-			// 开始训练
+				});
+			}); // 开始训练
+
 			function startEhome(paid, that) {
 				if (ehomeVip == "0" && paid == "1") {
-					popBox9("请先开通会员", $(that))
+					popBox9("请先开通会员", $(that));
 				} else {
-					$("#ehome-detail .item a")[0].click()
+					$("#ehome-detail .item a")[0].click();
 				}
 			}
 
 			function popBox9(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox9 .popCont .btn").addClass("curr");
 				$(".popBox9 .popCont h2").html(text);
 				$(".popBox9").show();
@@ -155,49 +156,52 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox9 .popCont h2").html("")
-				$(".popBox9").hide();
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'ehome')
-				// $("#btn-login")[0].click();
-				Q.go("personal/vip-html?resh")
-			});
+				$(".popBox9 .popCont h2").html("");
+				$(".popBox9").hide(); // 跳转登录页
 
-			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+				localStorage.setItem('moduleId', 'ehome'); // $("#btn-login")[0].click();
+
+				Q.go("personal/vip-html?resh");
+			}); // 如果弹窗打开，返回键关闭弹窗不返回上一页
+
 			function goBackED() {
 				if ($(".popBox9").is(":visible")) {
 					$(".popBox9 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$("#ehome-detail-html .curr").removeClass("past-cur");
-					$(".popBox9 .popCont h2").html("")
+					$(".popBox9 .popCont h2").html("");
 					$(".popBox9").hide();
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
 			}
+
 			$(document).on("keydown", function(e) {
 				if (e.keyCode == 10009) {
 					if ($(".popBox9").is(":visible")) {
 						$(".popBox9 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$(".past-cur").removeClass("past-cur");
-						$(".popBox9 .popCont h2").html("")
+						$(".popBox9 .popCont h2").html("");
 						$(".popBox9").hide();
 					}
-				}
-				// 识别方向键, 定位元素
+				} // 识别方向键, 定位元素
+
+
 				if (e.keyCode >= 37 && e.keyCode <= 40) {
 					if ($(".curr").data("top")) {
-						$("#ehome-detail-html").scrollTop(0)
+						$("#ehome-detail-html").scrollTop(0);
 					}
-					let curr = $(".curr").eq(0)
-					if (curr.offset().top > (1080 - curr.height())) {
-						$("#ehome-detail-html").scrollTop($("#ehome-detail-html").scrollTop() + curr.offset().top - 40)
+
+					var curr = $(".curr").eq(0);
+
+					if (curr.offset().top > 1080 - curr.height()) {
+						$("#ehome-detail-html").scrollTop($("#ehome-detail-html").scrollTop() + curr.offset().top - 40);
 					} else if (curr.offset().top < 0) {
-						$("#ehome-detail-html").scrollTop($("#ehome-detail-html").scrollTop() + curr.offset().top - 40)
+						$("#ehome-detail-html").scrollTop($("#ehome-detail-html").scrollTop() + curr.offset().top - 40);
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

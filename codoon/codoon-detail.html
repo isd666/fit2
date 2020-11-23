@@ -36,8 +36,8 @@
 								<div class="flex flex-wrap curr-box mag-r-026" id="codoon-detail" data-currbox="dd">
 									<script type="text/html" id="codoon-detail-t">
 										{{each data as e i}}
-										<div class="item flex-3">
-											<div class="mag-r-30 mag-b-30 pr">
+										<div class="item mag-l-40 mag-b-40">
+											<div class="pr">
 												<a data-paid="{{e.playable}}" data-id="{{e.id}}" id="dd-{{i}}" class="pr ovh" data-up="{{if i<3}}cc-0{{else}}dd-{{i-3}}{{/if}}" data-right="{{if i+1 < data.length}}dd-{{i+1}}{{/if}}" data-left="{{if i>0}}dd-{{i-1}}{{/if}}" data-down="{{if i<data.length-3}}dd-{{i+3}}{{/if}}">
 													<img src="{{prefix}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
 													{{if e.playable=="0" && vip!=1}}
@@ -72,54 +72,55 @@
 
 		<script>
 			var albumid = localStorage.getItem('albumid');
-			var isLogin = localStorage.getItem("isLogin")
-			var codoonVip = localStorage.getItem("codoonVip")
+			var isLogin = localStorage.getItem("isLogin");
+			var codoonVip = localStorage.getItem("codoonVip");
 			globalAjaxC("codoon/detail?albumid=" + albumid, {}, function(data) {
-				data.vip = codoonVip
+				data.vip = codoonVip;
 				var html = template("codoon-info-t", data);
 				$("#codoon-info").html(html);
 				var datas = {
 					data: data.contentlist,
 					prefix: data.prefix,
 					vip: codoonVip
-				}
+				};
 				var html2 = template("codoon-detail-t", datas);
 				$("#codoon-detail").html(html2);
-
 				$(".course .course-list .item").each(function() {
 					var time = $(this).find('.font span em').text();
-					$(this).find('.font span em').html(secondToTime(time) + "分钟")
-				})
-
+					$(this).find('.font span em').html(secondToTime(time) + "分钟");
+				});
 				$("#codoon-detail .item a").click(function() {
-					var paid = $(this).data("paid")
-					var contentId = $(this).data("id")
+					var paid = $(this).data("paid");
+					var contentId = $(this).data("id");
+
 					if (paid == "1") {
-						localStorage.setItem('contentId', contentId)
+						localStorage.setItem('contentId', contentId);
 						Q.go("codoon/codoon-video-html?ceng4");
 					} else if (codoonVip == "1") {
-						localStorage.setItem('contentId', contentId)
+						localStorage.setItem('contentId', contentId);
 						Q.go("codoon/codoon-video-html?ceng4");
 					} else if (codoonVip == "0") {
-						popBox16("请先开通会员", $(this))
+						popBox16("请先开通会员", $(this));
 					} else {
-						popBox16("请先登录", $(this))
+						popBox16("请先登录", $(this));
 					}
-				})
-				$("#cc-0").click(function(){
-					var paid = $(this).data("paid")
-					var hId = $(this).data("id")
-					if(codoonVip == "0" && paid == "0"){
-						popBox16("请先开通会员", $(this))
+				});
+				$("#cc-0").click(function() {
+					var paid = $(this).data("paid");
+					var hId = $(this).data("id");
+
+					if (codoonVip == "0" && paid == "0") {
+						popBox16("请先开通会员", $(this));
 					} else {
-						localStorage.setItem('contentId', hId)
+						localStorage.setItem('contentId', hId);
 						Q.go("codoon/codoon-video-html?ceng4");
 					}
-				})
-			})
+				});
+			});
+
 			function popBox16(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox16 .popCont .btn").addClass("curr");
 				$(".popBox16 .popCont h2").html(text);
 				$(".popBox16").show();
@@ -129,39 +130,41 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox16 .popCont h2").html("")
-				$(".popBox16").hide();
-				// 跳转登录
-				localStorage.setItem('moduleId', 'codoon')
+				$(".popBox16 .popCont h2").html("");
+				$(".popBox16").hide(); // 跳转登录
+
+				localStorage.setItem('moduleId', 'codoon');
 				$("#cc-1")[0].click();
-			});
-			
-			// 如果弹窗打开，返回键关闭弹窗不返回上一页
-			function goBackCD(){
+			}); // 如果弹窗打开，返回键关闭弹窗不返回上一页
+
+			function goBackCD() {
 				if ($(".popBox16").is(":visible")) {
 					$(".popBox16 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$(".past-cur").removeClass("past-cur");
-					$(".popBox16 .popCont h2").html("")
+					$(".popBox16 .popCont h2").html("");
 					$(".popBox16").hide();
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
 			}
+
 			$(document).on("keydown", function(e) {
 				// 识别方向键, 定位元素
 				if (e.keyCode >= 37 && e.keyCode <= 40) {
-					if($(".curr").data("top")){
-						$("#codoon-detail-html").scrollTop(0)
+					if ($(".curr").data("top")) {
+						$("#codoon-detail-html").scrollTop(0);
 					}
-					let curr = $(".curr").eq(0)
-					if (curr.offset().top > (1080 - curr.height())) {
-						$("#codoon-detail-html").scrollTop($("#codoon-detail-html").scrollTop() + curr.offset().top - 40)
+
+					var curr = $(".curr").eq(0);
+
+					if (curr.offset().top > 1080 - curr.height()) {
+						$("#codoon-detail-html").scrollTop($("#codoon-detail-html").scrollTop() + curr.offset().top - 40);
 					} else if (curr.offset().top < 0) {
-						$("#codoon-detail-html").scrollTop($("#codoon-detail-html").scrollTop() + curr.offset().top - 40)
+						$("#codoon-detail-html").scrollTop($("#codoon-detail-html").scrollTop() + curr.offset().top - 40);
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

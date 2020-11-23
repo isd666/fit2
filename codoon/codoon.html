@@ -9,7 +9,7 @@
 					 data-right="aa-2" data-down="b-0">瑜伽</a>
 					<a href="javascript:;" onclick="getCodoonData(3)" class="nav1 mag-l-40 flex-center f-60" id="aa-2" data-left="aa-1"
 					 data-right="aa-3" data-down="b-0">健身</a>
-					<a href="javascript:;" onclick="getCodoonData('')" class="nav1 mag-l-40 flex-center f-60" id="aa-3" data-left="aa-2"
+					<a href="javascript:;" onclick="getCodoonData(4)" class="nav1 mag-l-40 flex-center f-60" id="aa-3" data-left="aa-2"
 					 data-right="aa-4" data-down="b-0">更多</a>
 					<a href="javascript:;" onclick="getCodoonHistory()" class="nav1 mag-l-40 flex-center f-60" id="aa-4" data-left="aa-3"
 					 data-right="aa-0" data-down="b-0">我的训练</a>
@@ -18,14 +18,14 @@
 				<a href="#!personal/vip-html?resh" id="codoon-vip"></a>
 			</div>
 			<div class="codoon-list curr-box list-list" data-currbox="b">
-				
+
 				<div id="R-codoon" class="flex flex-wrap"></div>
 				<div class="flex flex-wrap" style="display: none;">
 					<script type="text/html" id="R-codoon-t">
 						{{if data.length > 0}}
 						{{each data as e i}}
 						<div class="w mag-l-40 mag-b-40">
-							<a data-id="{{e.id}}" data-paid="{{e.paid}}" data-contentid="{{e.contentid}}" class="item pr ovh" id="b-{{i}}" data-right="{{if i+1 < data.length}}b-{{i+1}}{{/if}}"data-left="{{if i>0}}b-{{i-1}}{{/if}}"data-up="{{if i<2}}aa-{{up}}{{else if i==2}}b-0{{else}}b-{{i-3}}{{/if}}"data-down="{{if i<2&&data.length>2}}b-{{i+2}}{{else if i<data.length-3}}b-{{i+3}}{{/if}}">
+							<a data-id="{{e.id}}" data-paid="{{e.paid}}" data-contentid="{{e.contentid}}" class="item pr ovh" id="b-{{i}}" data-right="{{if i+1 < data.length}}b-{{i+1}}{{/if}}" data-left="{{if i>0}}b-{{i-1}}{{/if}}" data-up="{{if i<2}}aa-{{up}}{{else if i==2}}b-0{{else}}b-{{i-3}}{{/if}}"data-down="{{if i<2&&data.length>2}}b-{{i+2}}{{else if i<data.length-3}}b-{{i+3}}{{/if}}">
 								<img src="{{imgpath}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
 								{{if e.paid=="1"}}
 								<img src="images/vip.png" class="pa free auto-img">
@@ -45,7 +45,7 @@
 					<script type="text/html" id="R-codoon-s">
 						{{if data.length > 0}}
 						{{each data as e i}}
-						<div class="w mag-l-40 mag-b-40">
+						<div class="w mag-b-40">
 							<a data-id="{{e.id}}" data-paid="{{e.paid}}" data-played="{{e.played}}" data-contentid="{{e.contentid}}" class="item pr ovh" id="b-{{i}}" data-right="{{if i+1 < data.length}}b-{{i+1}}{{/if}}"data-left="{{if i>0}}b-{{i-1}}{{/if}}"data-up="{{if i<3}}aa-{{up}}{{else}}b-{{i-3}}{{/if}}"data-down="{{if i<data.length-3}}b-{{i+3}}{{/if}}">
 								<img src="{{imgpath}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
 								{{if e.paid=="1"}}
@@ -85,17 +85,19 @@
 			globalAjaxC("codoon/membership", {}, function(data) {
 				if (data.result == "true") {
 					localStorage.setItem("codoonVip", "1");
-					var expire = data.data.enddate
-					var overtime
+					var expire = data.data.enddate;
+					var overtime;
+
 					if (expire != null) {
 						expire = expire.replace(/-/g, "/");
 						var vipDate = new Date(expire);
-						var endDate = (new Date()).getTime();
+						var endDate = new Date().getTime();
 						var startDate = vipDate.getTime();
-						overtime = startDate - endDate
+						overtime = startDate - endDate;
+
 						if (overtime > 0) {
 							localStorage.setItem("codoonVip", "1");
-							codoonVip = 1
+							codoonVip = 1;
 						} else {
 							localStorage.setItem("codoonVip", "0");
 						}
@@ -105,86 +107,95 @@
 				} else {
 					localStorage.setItem("codoonVip", "0");
 				}
-			})
-			// 数据请求
-			getCodoonData(1)
+			}); // 数据请求
+
+			getCodoonData(1);
 
 			function getCodoonData(serno) {
-				globalAjaxC("codoon/list?serno=" + serno + "&pagesize=9999", {}, function(data) {
+				globalAjaxC("codoon/list?serno=" + (serno == 4 ? '' : serno) + "&pagesize=9999", {}, function(data) {
 					var datas = {
 						data: data.albumlist,
 						imgpath: data.prefix,
-						up: serno-1
-					}
+						up: serno - 1
+					};
 					var html = template("R-codoon-t", datas);
 					$("#R-codoon").html(html);
-					$(".codoon-list .w").eq(0).addClass('top2')
-					$(".codoon-list .w").eq(1).addClass('top2')
-					// 点击跳详情
+					$(".codoon-list .w").eq(0).addClass('top2');
+					$(".codoon-list .w").eq(1).addClass('top2'); // 点击跳详情
+
 					$("#R-codoon .w a.item").click(function() {
-						var albumid = $(this).data("id")
-						localStorage.setItem('albumid', albumid)
+						var albumid = $(this).data("id");
+						localStorage.setItem('albumid', albumid);
 						Q.go("codoon/codoon-detail-html?ceng3");
-					})
-				})
-			}
-			// 我的训练
+					});
+				});
+			} // 我的训练
+
+
 			function getCodoonHistory() {
 				if (localStorage.getItem('isLogin') != 1) {
 					popBox10("请先登录");
-					return false
+					return false;
 				}
+
 				globalAjaxC("history/list?moduleid=codoon&pagesize=9999", {}, function(data) {
 					var datas = {
 						data: data.history,
 						imgpath: data.prefix,
 						up: 4
+					};
+
+					for (var i = datas.data.length; i--;) {
+						datas.data[i].time = secondToDate(datas.data[i].played);
 					}
-					for (let i=datas.data.length;i--;){
-						datas.data[i].time = secondToDate(datas.data[i].played)
-					}
+
 					var html = template("R-codoon-s", datas);
 					$("#R-codoon").html(html);
-					if($("#codoon-html .curr").length <=0) {
+
+					if ($("#codoon-html .curr").length <= 0) {
 						// 判断无焦点为返回， 将焦点放到第一个列表项，滚动条置顶
-						$("#codoon-html .w a.item#b-0").addClass('curr')
-						$("#codoon-html").scrollTop(0)
-					}
-					// 点击跳播放
+						$("#codoon-html .w a.item#b-0").addClass('curr');
+						$("#codoon-html").scrollTop(0);
+					} // 点击跳播放
+
+
 					$("#R-codoon .w a.item").click(function() {
-						var paid = $(this).data("paid")
+						var paid = $(this).data("paid");
+
 						if (codoonVip == 0 && paid == 1) {
 							popBox10("请先购买会员");
-							return false
+							return false;
 						}
-						let played = $(this).data("played")
-						var contentid = $(this).data("contentid")
-						localStorage.setItem('contentId', contentid)
-						localStorage.setItem('played', played)
+
+						var played = $(this).data("played");
+						var contentid = $(this).data("contentid");
+						localStorage.setItem('contentId', contentid);
+						localStorage.setItem('played', played);
 						Q.go("codoon/codoon-video-html?ceng4");
-					})
-				})
+					});
+				});
 			}
 
 			$("#R-codoon .w a").off().on('click', function() {
-				var paid = $(this).data("paid")
-				var contentId = $(this).data("id")
+				var paid = $(this).data("paid");
+				var contentId = $(this).data("id");
+
 				if (paid == "0") {
-					localStorage.setItem('contentId', contentId)
+					localStorage.setItem('contentId', contentId);
 					Q.go("codoon/codoon-video-html?ceng4");
 				} else if (codoonVip == "1") {
-					localStorage.setItem('contentId', contentId)
+					localStorage.setItem('contentId', contentId);
 					Q.go("codoon/codoon-video-html?ceng4");
 				} else if (codoonVip == "0") {
-					popBox10("请先开通会员", $(this))
+					popBox10("请先开通会员", $(this));
 				} else {
-					popBox10("请先登录", $(this))
+					popBox10("请先登录", $(this));
 				}
-			})
+			});
 
 			function popBox10(text) {
 				$("#codoon-html .curr").addClass("past-cur");
-				$("#codoon-html .curr").removeClass("curr")
+				$("#codoon-html .curr").removeClass("curr");
 				$(".popBox10 .popCont .btn").addClass("curr");
 				$(".popBox10 .popCont h2").html(text);
 				$(".popBox10").show();
@@ -194,35 +205,35 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$("#codoon-html .curr").removeClass("past-cur");
-				$(".popBox10 .popCont h2").html("")
-				$(".popBox10").hide();
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'codoon')
-				$("#codoon-vip")[0].click();
-			});
+				$(".popBox10 .popCont h2").html("");
+				$(".popBox10").hide(); // 跳转登录页
 
-			// 如果弹窗打开，返回键关闭弹窗不返回上一页
-			function goBackC(){
+				localStorage.setItem('moduleId', 'codoon');
+				$("#codoon-vip")[0].click();
+			}); // 如果弹窗打开，返回键关闭弹窗不返回上一页
+
+			function goBackC() {
 				if ($(".popBox10").is(":visible")) {
 					$(".popBox10 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$(".past-cur").removeClass("past-cur");
-					$(".popBox10 .popCont h2").html("")
+					$(".popBox10 .popCont h2").html("");
 					$(".popBox10").hide();
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
 			}
+
 			$(document).on("keydown", function(e) {
 				// 识别方向键, 定位元素
 				if (e.keyCode >= 37 && e.keyCode <= 40) {
 					if ($(".curr").eq(0).offset().top > 1080 - $(".curr").eq(0).height()) {
-						$("#codoon-html").scrollTop($("#codoon-html").scrollTop() + $(".curr").eq(0).offset().top - 40)
+						$("#codoon-html").scrollTop($("#codoon-html").scrollTop() + $(".curr").eq(0).offset().top - 40);
 					} else if ($(".curr").eq(0).offset().top < 0) {
-						$("#codoon-html").scrollTop($("#codoon-html").scrollTop() + $(".curr").eq(0).offset().top - 40)
+						$("#codoon-html").scrollTop($("#codoon-html").scrollTop() + $(".curr").eq(0).offset().top - 40);
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

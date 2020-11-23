@@ -5,9 +5,9 @@
 				<div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div>
 				<div class="current c-yellow f-26 pa"></div>
 
-				<div class="mag-r-50 f-20 curr-box back-btn flex">
+				<div class="mag-r-50 f-20 curr-box back-btn flex" style="display:none">
 					<a href="#!personal/vip-html?resh" id="course-list-vip"></a>
-					<a href="javascript:history.go(-1);" class="btn btn-back" id="back" display="none">返回</a>
+					<a href="javascript:history.go(-1);" class="btn btn-back" id="back">返回</a>
 				</div>
 			</div>
 			<div class="main">
@@ -22,7 +22,7 @@
 										{{if data.length > 0}}
 										{{each data as e i}}
 										<div class="w flex-5">
-											<a data-id="{{e.id}}" data-paid="{{e.paid}}" class="play-item item pr dpb ovh" id="ee-{{i}}" data-left="{{if i>0}}ee-{{i-1}}{{/if}}" data-right="{{if i<9}}ee-{{i+1}}{{/if}}" data-up="{{if i<5}}back{{else}}ee-{{i-5}}{{/if}}" data-down="{{if i<5}}{{if i<data.length-5}}ee-{{i+5}}{{else}}ff-2{{/if}}{{else}}ff-2{{/if}}">
+											<a data-id="{{e.id}}" data-paid="{{e.paid}}" class="play-item item pr dpb ovh" id="ee-{{i}}" data-left="{{if i>0}}ee-{{i-1}}{{/if}}" data-right="{{if i<9}}ee-{{i+1}}{{/if}}" data-up="{{if i>=5}}ee-{{i-5}}{{/if}}" data-down="{{if i<5}}{{if i<data.length-5}}ee-{{i+5}}{{else}}ff-2{{/if}}{{else}}ff-2{{/if}}">
 												<img src="{{prefix}}{{e.cover}}" class="ratio-img" onerror="lod(this)">
 												{{if e.paid=="0"}}
 												<img src="images/free.png" class="pa free auto-img">
@@ -68,25 +68,27 @@
 
 		<script>
 			var classify = localStorage.getItem('classify');
-			var gender = localStorage.getItem('gender');
-			//创建分页
+			var gender = localStorage.getItem('gender'); //创建分页
+
 			globalAjaxC("fit/list?gender=" + gender + "&categoryid=" + classify, {}, function(data) {
 				//分页
-				var itemlen = data.itemcount
-				var page = Math.ceil(itemlen / 10);
-				//console.log(page)
+				var itemlen = data.itemcount;
+				var page = Math.ceil(itemlen / 10); //console.log(page)
+
 				var courselistPage = new Page({
 					ele: "courselistPage",
-					page: page, // 总页数
-					changePage: function(page) { //改变分页回调
+					page: page,
+					// 总页数
+					changePage: function changePage(page) {
+						//改变分页回调
 						ajax(page);
 					}
 				});
 
 				if (gender == "m") {
-					$("#course-list-html .current").html(localStorage.getItem('current') + "-男士训练")
+					$("#course-list-html .current").html(localStorage.getItem('current') + "-男士训练");
 				} else if (gender == "f") {
-					$("#course-list-html .current").html(localStorage.getItem('current') + "-女士训练")
+					$("#course-list-html .current").html(localStorage.getItem('current') + "-女士训练");
 				}
 
 				if (page <= 0) {
@@ -94,24 +96,24 @@
 				} else {
 					document.getElementById(courselistPage.el).parentNode.style.display = "block";
 				}
-			})
+			});
 			ajax(1); // 初始化
-			function ajax(page) { //分页切换调用
+
+			function ajax(page) {
+				//分页切换调用
 				var offset = page - 1;
 				globalAjaxC("fit/list?gender=" + gender + "&categoryid=" + classify + "&pageno=" + offset + "&pagesize=10", {},
 					function(data) {
 						var datas = {
 							data: data.albumlist,
 							prefix: data.prefix
-						}
+						};
 						var html = template("course-list-t", datas);
 						$("#course-list").html(html);
-
 						$("#course-list .item").each(function() {
 							var time = $(this).find('.font span em').text();
-							$(this).find('.font span em').html(secondToTime(time) + "分钟")
-						})
-
+							$(this).find('.font span em').html(secondToTime(time) + "分钟");
+						});
 
 						if (offset == "0" && $(".course-list-box .curr").length == 0) {
 							if (datas.data.length > 0) {
@@ -120,32 +122,33 @@
 								$(".course-list-box .btn-back").addClass("curr");
 							}
 						}
-						let isLogin = localStorage.getItem("isLogin")
+
+						var isLogin = localStorage.getItem("isLogin");
 						$("#course-list a.item").off().on("click", function() {
 							var paid = $(this).data("paid");
 							var albumID = $(this).data("id");
 							var fitVip = localStorage.getItem("fitVip");
+
 							if (paid == "0") {
-								localStorage.setItem('albumID', albumID)
+								localStorage.setItem('albumID', albumID);
 								Q.go("list/list-details-html?ceng4");
 							} else if (isLogin != 1) {
-								popBox18("请先登录", $(this))
+								popBox18("请先登录", $(this));
 							} else if (fitVip == "1") {
-								localStorage.setItem('albumID', albumID)
+								localStorage.setItem('albumID', albumID);
 								Q.go("list/list-details-html?ceng4");
 							} else if (fitVip == "0") {
-								popBox18("请先开通会员", $(this))
+								popBox18("请先开通会员", $(this));
 							} else {
-								popBox18("请先登录", $(this))
+								popBox18("请先登录", $(this));
 							}
-						})
-					})
+						});
+					});
 			}
-
 
 			function popBox18(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox18 .popCont .btn").addClass("curr");
 				$(".popBox18 .popCont h2").html(text);
 				$(".popBox18").show();
@@ -155,25 +158,23 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox18 .popCont h2").html("")
-				$(".popBox18").hide();
-				// 跳转登录
-				localStorage.setItem('moduleId', 'fit')
-				$("#course-list-vip")[0].click()
+				$(".popBox18 .popCont h2").html("");
+				$(".popBox18").hide(); // 跳转登录
+
+				localStorage.setItem('moduleId', 'fit');
+				$("#course-list-vip")[0].click();
 			});
-
-
 			$(document).on("keydown", function(e) {
 				if (e.keyCode == 10009) {
 					if ($(".popBox18").is(":visible")) {
 						$(".popBox18 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$(".past-cur").removeClass("past-cur");
-						$(".popBox18 .popCont h2").html("")
+						$(".popBox18 .popCont h2").html("");
 						$(".popBox18").hide();
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

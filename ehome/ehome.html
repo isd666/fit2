@@ -5,8 +5,8 @@
 				<a href="#!personal/vip-html?resh" id="ehome-vip"></a>
 				<div class="navBox curr-box" data-currbox="aa">
 					<div class="nav-top-box flex jc-sb curr-box" id="ehomePromotion" data-currbox="aa">
-							<script type="text/html" id="ehomePromotion-t">
-								<a href="#!ehome/ehome-detail-html?ceng4" onclick="javascript:localStorage.setItem('albumid','{{id}}');" class="nav curr pr ovh" id="aa-0" data-right="aa-1" data-left="aa-0" data-down="ab-0">
+						<script type="text/html" id="ehomePromotion-t">
+							<a href="#!ehome/ehome-detail-html?ceng4" onclick="javascript:localStorage.setItem('albumid','{{id}}');" class="nav curr pr ovh" id="aa-0" data-right="aa-1" data-left="aa-0" data-down="ab-0">
 									<img src="{{imgurl}}" class="ratio-img" onerror="lod(this)">
 									{{if paid=="1"}}
 									<span class="pa free"><img src="images/vip.png" class="auto-img"></span>
@@ -20,16 +20,20 @@
 						</script>
 					</div>
 					<div class="nav-bto-box flex jc-sb" data-currbox="ab">
-						<a href="#!ehome/ehome-list-html?ceng3" onclick="javascript:localStorage.setItem('serno','1');" class="nav mag-r-40" id="ab-0" data-left="ab-3" data-right="ab-1" data-down="b-00" data-up="aa-0">
+						<a href="#!ehome/ehome-list-html?ceng3" onclick="javascript:localStorage.setItem('serno','1');" class="nav mag-r-40"
+						 id="ab-0" data-left="ab-3" data-right="ab-1" data-down="b-00" data-up="aa-0">
 							<img src="images/ehome-team.jpg" alt="">
 						</a>
-						<a href="#!ehome/ehome-list-html?ceng3" onclick="javascript:localStorage.setItem('serno','2');" class="nav mag-r-40" id="ab-1" data-left="ab-0" data-right="ab-2" data-down="b-00" data-up="aa-0">
+						<a href="#!ehome/ehome-list-html?ceng3" onclick="javascript:localStorage.setItem('serno','2');" class="nav mag-r-40"
+						 id="ab-1" data-left="ab-0" data-right="ab-2" data-down="b-00" data-up="aa-0">
 							<img src="images/ehome-esport.jpg" alt="">
 						</a>
-						<a href="#!ehome/ehome-list-html?ceng3" onclick="javascript:localStorage.setItem('serno','3');" class="nav mag-r-40" id="ab-2" data-left="ab-1" data-right="ab-3" data-down="b-00" data-up="aa-0">
+						<a href="#!ehome/ehome-list-html?ceng3" onclick="javascript:localStorage.setItem('serno','3');" class="nav mag-r-40"
+						 id="ab-2" data-left="ab-1" data-right="ab-3" data-down="b-00" data-up="aa-0">
 							<img src="images/ehome-zsport.jpg" alt="">
 						</a>
-						<a href="#!ehome/ehome-list-html?ceng3" onclick="javascript:localStorage.setItem('serno','4');" class="nav" id="ab-3" data-left="ab-2" data-right="ab-0" data-down="b-00" data-up="aa-0">
+						<a href="#!ehome/ehome-list-html?ceng3" onclick="javascript:localStorage.setItem('serno','4');" class="nav" id="ab-3"
+						 data-left="ab-2" data-right="ab-0" data-down="b-00" data-up="aa-0">
 							<img src="images/ehome-heath.jpg" alt="">
 						</a>
 					</div>
@@ -86,60 +90,67 @@
 					localStorage.setItem("ehomeVip", "0");
 				} else {
 					localStorage.setItem("ehomeVip", "1");
-					var expire = data.data.enddate
-					var overtime
+					var expire = data.data.enddate;
+					var overtime;
+
 					if (expire != null) {
 						expire = expire.replace(/-/g, "/");
 						var vipDate = new Date(expire);
-						var endDate = (new Date()).getTime();
+						var endDate = new Date().getTime();
 						var startDate = vipDate.getTime();
-						overtime = startDate - endDate
+						overtime = startDate - endDate;
+
 						if (overtime > 0) {
-							localStorage.setItem("ehomeVip", "1")
+							localStorage.setItem("ehomeVip", "1");
 						} else {
-							localStorage.setItem("ehomeVip", "0")
+							localStorage.setItem("ehomeVip", "0");
 						}
 					} else {
-						localStorage.setItem("ehomeVip", "0")
+						localStorage.setItem("ehomeVip", "0");
 					}
 				}
-			})
-
+			});
 			globalAjaxC("ehome/homepage", {}, function(data) {
 				var datas = {
 					data: data.data,
 					imgpath: data.prefix
-				}
+				};
 				var html = template("R-ehome-t", datas);
-				$("#R-ehome").html(html);
-				// 设置首页推荐内容, 如果后台没有推荐, 选取已有内容第一条
-				if(data.promotion.length > 0) {
-					data_t = {
+				$("#R-ehome").html(html); // 设置首页推荐内容, 如果后台没有推荐, 选取已有内容第一条
+				var datat = {
+						id: 0,
+						imgurl: 'null',
+						title: 'title',
+						paid: 0
+					};
+				if (data.promotion.length > 0) {
+					datat = {
 						id: data.promotion[0].id,
 						imgurl: data.prefix + data.promotion[0].cover,
 						title: data.promotion[0].title,
 						paid: data.promotion[0].paid || 0
-					}
+					};
 				} else {
-					data_t = {
+					datat = {
 						id: data.data[0].albumlist[0].id,
 						imgurl: data.prefix + data.data[0].albumlist[0].cover,
 						title: data.data[0].albumlist[0].title,
 						paid: data.promotion[0].paid || 0
-					}
+					};
 				}
-				var html_t = template("ehomePromotion-t", data_t);
-				$("#ehomePromotion").html(html_t);
-			})
 
-			// 我的记录
+				var htmlt = template("ehomePromotion-t", datat);
+				$("#ehomePromotion").html(htmlt);
+			}); // 我的记录
+
 			function goHistory() {
-				if(localStorage.getItem('isLogin') == 1) {
+				if (localStorage.getItem('isLogin') == 1) {
 					Q.go("ehome/ehome-history-html?ceng3");
 				} else {
 					popBox13("请先登录");
 				}
 			}
+
 			$(".my-list").off().on("click", function() {
 				if (localStorage.getItem("isLogin") == 1) {
 					var url = $(this).data("href");
@@ -147,11 +158,11 @@
 				} else {
 					popBox13("请先登录");
 				}
-			})
+			});
 
 			function popBox13(text) {
 				$("#ehome-html .curr").addClass("past-cur");
-				$("#ehome-html .curr").removeClass("curr")
+				$("#ehome-html .curr").removeClass("curr");
 				$(".popBox13 .popCont .btn").addClass("curr");
 				$(".popBox13 .popCont h2").html(text);
 				$(".popBox13").show();
@@ -161,45 +172,47 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$("#ehome-html .curr").removeClass("past-cur");
-				$(".popBox13 .popCont h2").html("")
-				$(".popBox13").hide();
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'ehome')
-				$("#ehome-vip")[0].click();
-			});
+				$(".popBox13 .popCont h2").html("");
+				$(".popBox13").hide(); // 跳转登录页
 
-			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+				localStorage.setItem('moduleId', 'ehome');
+				$("#ehome-vip")[0].click();
+			}); // 如果弹窗打开，返回键关闭弹窗不返回上一页
+
 			function goBackE() {
 				if ($(".popBox13").is(":visible")) {
 					$(".popBox13 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$("#ehome-html .curr").removeClass("past-cur");
-					$(".popBox13 .popCont h2").html("")
+					$(".popBox13 .popCont h2").html("");
 					$(".popBox13").hide();
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
 			}
+
 			$(document).on("keydown", function(e) {
 				if (e.keyCode == 10009) {
 					if ($(".popBox13").is(":visible")) {
 						$(".popBox13 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$("#ehome-html .curr").removeClass("past-cur");
-						$(".popBox13 .popCont h2").html("")
+						$(".popBox13 .popCont h2").html("");
 						$(".popBox13").hide();
 					}
-				}
-				// 识别方向键, 定位元素
+				} // 识别方向键, 定位元素
+
+
 				if (e.keyCode >= 37 && e.keyCode <= 40) {
-					let curr = $(".curr").eq(0)
-					if (curr.offset().top > (1080 - curr.height())) {
-						$("#ehome-html").scrollTop($("#ehome-html").scrollTop() + curr.offset().top - 40)
+					var curr = $(".curr").eq(0);
+
+					if (curr.offset().top > 1080 - curr.height()) {
+						$("#ehome-html").scrollTop($("#ehome-html").scrollTop() + curr.offset().top - 40);
 					} else if (curr.offset().top < 0) {
-						$("#ehome-html").scrollTop($("#ehome-html").scrollTop() + curr.offset().top - 40)
+						$("#ehome-html").scrollTop($("#ehome-html").scrollTop() + curr.offset().top - 40);
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

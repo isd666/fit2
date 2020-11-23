@@ -7,7 +7,7 @@
 
 				<div class="mag-r-50 f-20 curr-box back-btn flex curr-box" style="display: none;" data-currbox="btn">
 					<a href="#!personal/vip-html?resh" id="course-vip"></a>
-					<a href="javascript:history.go(-1);" class="btn btn-back" >返回</a>
+					<a href="javascript:history.go(-1);" class="btn btn-back">返回</a>
 				</div>
 			</div>
 
@@ -82,46 +82,45 @@
 
 		<script>
 			var classify = localStorage.getItem('classify');
-			var fitVip = localStorage.getItem("fitVip")
+			var fitVip = localStorage.getItem("fitVip");
 			globalAjaxC("fit/list?categoryid=" + classify, {}, function(data) {
 				var html = template("course-info-t", data);
 				$("#course-info").html(html);
-
 				var datas = {
 					data: data.albumlist,
 					prefix: data.prefix
-				}
+				};
 				var html2 = template("train-t", datas);
 				$("#train").html(html2);
-
-				$("#course-html .current").text(localStorage.getItem('current'))
+				$("#course-html .current").text(localStorage.getItem('current'));
 				$(".course .course-list .item").each(function() {
 					var time = $(this).find('.font span em').text();
-					$(this).find('.font span em').html(secondToTime(time) + "分钟")
-				})
-				let isLogin = localStorage.getItem("isLogin")
+					$(this).find('.font span em').html(secondToTime(time) + "分钟");
+				});
+				var isLogin = localStorage.getItem("isLogin");
 				$("#train .item a").click(function() {
-					var paid = $(this).data("paid")
-					var albumID = $(this).data("id")
+					var paid = $(this).data("paid");
+					var albumID = $(this).data("id");
+
 					if (paid == "0") {
-						localStorage.setItem('albumID', albumID)
+						localStorage.setItem('albumID', albumID);
 						Q.go("list/list-details-html?ceng3");
 					} else if (isLogin == "0") {
-						popBox6("请先登录", $(this))
+						popBox6("请先登录", $(this));
 					} else if (fitVip == "1") {
-						localStorage.setItem('albumID', albumID)
+						localStorage.setItem('albumID', albumID);
 						Q.go("list/list-details-html?ceng3");
 					} else if (fitVip == "0") {
-						popBox6("请先开通会员", $(this))
+						popBox6("请先开通会员", $(this));
 					} else {
-						popBox6("请先登录", $(this))
+						popBox6("请先登录", $(this));
 					}
-				})
-			})
-			
+				});
+			});
+
 			function popBox6(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox6 .popCont .btn").addClass("curr");
 				$(".popBox6 .popCont h2").html(text);
 				$(".popBox6").show();
@@ -131,24 +130,23 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox6 .popCont h2").html("")
-				$(".popBox6").hide();
-				// 跳转登录
-				localStorage.setItem('moduleId', 'fit')
-				$("#course-vip")[0].click()
-			});
+				$(".popBox6 .popCont h2").html("");
+				$(".popBox6").hide(); // 跳转登录
 
+				localStorage.setItem('moduleId', 'fit');
+				$("#course-vip")[0].click();
+			});
 			$(document).on("keydown", function(e) {
 				if (e.keyCode == 10009) {
 					if ($(".popBox6").is(":visible")) {
 						$(".popBox6 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$(".past-cur").removeClass("past-cur");
-						$(".popBox6 .popCont h2").html("")
+						$(".popBox6 .popCont h2").html("");
 						$(".popBox6").hide();
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

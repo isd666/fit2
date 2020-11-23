@@ -4,8 +4,8 @@
 			<div class="header flex jc-sb flex-center">
 				<div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div>
 				<div class="navBox flex flex-center f-28 curr-box" data-currbox="aa">
-					<a href="#!list/fhome-html?ceng2" class="nav1 mag-r-50 flex-center flex-center" id="aa-0" data-right="aa-1" data-down="b-0"><img
-						 src="images/icon1.png">视频课程</a>
+					<a href="#!list/fhome-html?ceng2" class="nav1 mag-r-50 flex-center flex-center" id="aa-0" data-right="aa-1"
+					 data-down="b-0"><img src="images/icon1.png">视频课程</a>
 					<a href="#!personal/vip-html?resh" class="nav2 flex-center flex-center" id="aa-1" data-left="aa-0" data-down="b-0"><img
 						 src="images/icon2.png">开通会员</a>
 				</div>
@@ -84,54 +84,57 @@
 				var page = Math.ceil(itemlen / 10);
 				var historyPageObj = new Page({
 					ele: "mylistPage",
-					page: page, // 总页数
-					changePage: function(page) { //改变分页回调
+					page: page,
+					// 总页数
+					changePage: function changePage(page) {
+						//改变分页回调
 						// console.log(page); // 页码
 						getFitHistory(page);
 					}
-				});
-
-				//alert(JSON.stringify(data));
+				}); //alert(JSON.stringify(data));
 
 				if (page <= 0) {
 					document.getElementById(historyPageObj.el).style.display = "none";
 				} else {
 					document.getElementById(historyPageObj.el).style.display = "flex";
 				}
-			})
-
+			});
 			getFitHistory(1); // 初始化
-			var offset
-			function getFitHistory(page) { //分页切换调用
+
+			var offset;
+
+			function getFitHistory(page) {
+				//分页切换调用
 				offset = page - 1;
 				globalAjaxC("history/list?moduleid=fit&pageno=" + offset + "&pagesize=10", {}, function(data) {
 					//alert(JSON.stringify(data))
 					var datas = {
 						data: data.history,
 						prefix: data.prefix
-					}
+					};
 					var html = template("my-list-t", datas);
 					$("#my-list").html(html);
-
 					$(".viewTime").each(function() {
-						var viewTime = $(this).text()
-						$(this).html(secondToDate(viewTime))
+						var viewTime = $(this).text();
+						$(this).html(secondToDate(viewTime));
 					});
 
-					if($("#my-list-html .curr").length <=0) {
-						$("#my-list-html #c-0").addClass('curr')
-					}
-					// $(".totalTime").text(data.total)
-				})
+					if ($("#my-list-html .curr").length <= 0) {
+						$("#my-list-html #c-0").addClass('curr');
+					} // $(".totalTime").text(data.total)
+
+				});
 			}
 
 			function setItem(id, played, title, paid, obj) {
-				var fitVip = localStorage.getItem("fitVip")
+				var fitVip = localStorage.getItem("fitVip");
+
 				if (fitVip == "0" && paid == "1") {
 					// mui.toast("请先开通会员");
-					popBox8("请先开通会员", $(obj))
+					popBox8("请先开通会员", $(obj));
 					return false;
 				}
+
 				localStorage.setItem("serno_played", "" + played);
 				localStorage.setItem("albumID", "" + id);
 				localStorage.setItem("current", "" + title);
@@ -140,7 +143,7 @@
 
 			function popBox8(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox8 .popCont .btn").addClass("curr");
 				$(".popBox8 .popCont h2").html(text);
 				$(".popBox8").show();
@@ -150,10 +153,10 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox8 .popCont h2").html("")
-				$(".popBox8").hide();
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'fit')
+				$(".popBox8 .popCont h2").html("");
+				$(".popBox8").hide(); // 跳转登录页
+
+				localStorage.setItem('moduleId', 'fit');
 				$(".nav2")[0].click();
 			});
 		</script>

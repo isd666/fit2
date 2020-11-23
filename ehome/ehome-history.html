@@ -15,6 +15,7 @@
 							<a data-paid="{{m.paid}}" data-played="{{m.played}}" data-id="{{m.contentid}}" class="item pr ovh mag-b-40" id="b-{{j}}" data-right="{{if j < data.length-1}}b-{{j+1}}{{/if}}" data-left="{{if j>0}}b-{{j-1}}{{/if}}" data-up="{{if j>2}}b-{{j-3}}{{/if}}" data-down="{{if j < data.length-3}}b-{{j+3}}{{/if}}">
 								<img src="{{imgpath}}{{m.cover}}" class="ratio-img" onerror="lod(this)">
 								<!-- <span class="font pa f-50 dpb black">{{m.title}}</span> -->
+								<span class="font pa f-24 dpb f-right">已播放至：{{m.time}}</span>
 								{{if m.paid=="1"}}
 								<img src="images/vip.png" class="pa free auto-img">
 								{{else}}
@@ -48,42 +49,48 @@
 		</div>
 
 		<script>
-			var ehomeVip = localStorage.getItem("ehomeVip")
-			getEhomeHistory()
+			var ehomeVip = localStorage.getItem("ehomeVip");
+			getEhomeHistory();
+
 			function getEhomeHistory() {
 				globalAjaxC("history/list?moduleid=ehome&pagesize=9999", {}, function(data) {
 					var datas = {
 						data: data.history,
 						imgpath: data.prefix
+					};
+					
+					for (var i = datas.data.length; i--;) {
+						datas.data[i].time = secondToDate(datas.data[i].played);
 					}
 					var html = template("R-ehome-history-t", datas);
 					$("#R-ehome-history").html(html);
-					$("#R-ehome-history .w .item").eq(0).addClass('curr')
-					$("#ehome-history-html").scrollTop(0)
+					$("#R-ehome-history .w .item").eq(0).addClass('curr');
+					$("#ehome-history-html").scrollTop(0);
 					$("#R-ehome-history .w .item").click(function() {
-						var paid = $(this).data("paid")
-						var contentId = $(this).data("id")
-						// 记录播放历史时长
-						var played = $(this).data("played")
-						localStorage.setItem('played', played)
+						var paid = $(this).data("paid");
+						var contentId = $(this).data("id"); // 记录播放历史时长
+
+						var played = $(this).data("played");
+						localStorage.setItem('played', played);
+
 						if (paid == "0") {
-							localStorage.setItem('contentId', contentId)
+							localStorage.setItem('contentId', contentId);
 							Q.go("ehome/ehome-video-html?ceng6");
 						} else if (ehomeVip == "1") {
-							localStorage.setItem('contentId', contentId)
+							localStorage.setItem('contentId', contentId);
 							Q.go("ehome/ehome-video-html?ceng6");
 						} else if (ehomeVip == "0") {
-							popBox12("请先开通会员", $(this))
+							popBox12("请先开通会员", $(this));
 						} else {
-							popBox12("请先登录", $(this))
+							popBox12("请先登录", $(this));
 						}
-					})
-				})
+					});
+				});
 			}
 
 			function popBox12(text) {
 				$("#ehome-history-html .curr").addClass("past-cur");
-				$("#ehome-history-html .curr").removeClass("curr")
+				$("#ehome-history-html .curr").removeClass("curr");
 				$(".popBox12 .popCont .btn").addClass("curr");
 				$(".popBox12 .popCont h2").html(text);
 				$(".popBox12").show();
@@ -93,22 +100,22 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$("#ehome-history-html .curr").removeClass("past-cur");
-				$(".popBox12 .popCont h2").html("")
-				$(".popBox12").hide();
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'ehome')
+				$(".popBox12 .popCont h2").html("");
+				$(".popBox12").hide(); // 跳转登录页
+
+				localStorage.setItem('moduleId', 'ehome');
 				$("#ehome-history-login")[0].click();
-			});
-			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+			}); // 如果弹窗打开，返回键关闭弹窗不返回上一页
+
 			function goBackEH() {
 				if ($(".popBox12").is(":visible")) {
 					$(".popBox12 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$("#ehome-history-html .curr").removeClass("past-cur");
-					$(".popBox12 .popCont h2").html("")
+					$(".popBox12 .popCont h2").html("");
 					$(".popBox12").hide();
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
 			}
 
@@ -118,19 +125,20 @@
 						$(".popBox12 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$("#ehome-history-html .curr").removeClass("past-cur");
-						$(".popBox12 .popCont h2").html("")
+						$(".popBox12 .popCont h2").html("");
 						$(".popBox12").hide();
 					}
-				}
-				// 识别方向键, 定位元素
+				} // 识别方向键, 定位元素
+
+
 				if (e.keyCode >= 37 && e.keyCode <= 40) {
 					if ($(".curr").eq(0).offset().top > 1080 - $(".curr").eq(0).height()) {
-						$("#ehome-history-html").scrollTop($("#ehome-history-html").scrollTop() + $(".curr").eq(0).offset().top - 40)
+						$("#ehome-history-html").scrollTop($("#ehome-history-html").scrollTop() + $(".curr").eq(0).offset().top - 40);
 					} else if ($(".curr").eq(0).offset().top < 0) {
-						$("#ehome-history-html").scrollTop($("#ehome-history-html").scrollTop() + $(".curr").eq(0).offset().top - 40)
+						$("#ehome-history-html").scrollTop($("#ehome-history-html").scrollTop() + $(".curr").eq(0).offset().top - 40);
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

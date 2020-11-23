@@ -3,16 +3,16 @@
 		<div class="codoon-box">
 			<div class="">
 				<div class="navBox flex flex-align curr-box" data-currbox="aa">
-					<a href="javascript:getYouthData(1);" class="nav1 mag-l-40 flex-center f-60 curr" id="aa-0" data-left="aa-4" data-right="aa-1"
-					 data-down="b-0">舞蹈生活</a>
-					<a href="javascript:getYouthData(2);" class="nav1 mag-l-40 flex-center f-60" id="aa-1" data-left="aa-0" data-right="aa-2"
+					<a href="javascript:;" onclick="getYouthData(1)" class="nav1 mag-l-40 flex-center f-60 curr" id="aa-0" data-left="aa-4"
+					 data-right="aa-1" data-down="b-0">舞蹈生活</a>
+					<a href="javascript:;" onclick="getYouthData(2)" class="nav1 mag-l-40 flex-center f-60" id="aa-1" data-left="aa-0" data-right="aa-2"
 					 data-down="b-0">畅玩音乐</a>
-					<a href="javascript:getYouthData(3);" class="nav1 mag-l-40 flex-center f-60" id="aa-2" data-left="aa-1" data-right="aa-3"
+					<a href="javascript:;" onclick="getYouthData(3)" class="nav1 mag-l-40 flex-center f-60" id="aa-2" data-left="aa-1" data-right="aa-3"
 					 data-down="b-0">兴趣爱好</a>
-					<a href="javascript:getYouthData(4);" class="nav1 mag-l-40 flex-center f-60" id="aa-3" data-left="aa-2" data-right="aa-4"
+					<a href="javascript:;" onclick="getYouthData(4)" class="nav1 mag-l-40 flex-center f-60" id="aa-3" data-left="aa-2" data-right="aa-4"
 					 data-down="b-0">调理养年</a>
-					<a href="javascript:getYouthHistory();" class="nav1 mag-l-40 flex-center f-60" id="aa-4" data-left="aa-3" data-right="aa-0"
-					 data-down="b-0">我的记录</a>
+					<a href="javascript:;" onclick="getYouthHistory()" class="nav1 mag-l-40 flex-center f-60" id="aa-4" data-left="aa-3"
+					 data-right="aa-0" data-down="b-0">我的记录</a>
 				</div>
 				<a class="btn-back codoon-back" href="javascript:goBackY();" style="display:none;"></a>
 				<a href="#!personal/vip-html?resh" id="youth-vip"></a>
@@ -84,17 +84,19 @@
 			globalAjaxC("youth/membership", {}, function(data) {
 				if (data.result == "true") {
 					localStorage.setItem("youthVip", "1");
-					var expire = data.data.enddate
-					var overtime
+					var expire = data.data.enddate;
+					var overtime;
+
 					if (expire != null) {
 						expire = expire.replace(/-/g, "/");
 						var vipDate = new Date(expire);
-						var endDate = (new Date()).getTime();
+						var endDate = new Date().getTime();
 						var startDate = vipDate.getTime();
-						overtime = startDate - endDate
+						overtime = startDate - endDate;
+
 						if (overtime > 0) {
 							localStorage.setItem("youthVip", "1");
-							youthVip = 1
+							youthVip = 1;
 						} else {
 							localStorage.setItem("youthVip", "0");
 						}
@@ -104,67 +106,73 @@
 				} else {
 					localStorage.setItem("youthVip", "0");
 				}
-			})
-			// 数据请求
-			getYouthData(1)
+			}); // 数据请求
+
+			getYouthData(1);
 
 			function getYouthData(serno) {
 				globalAjaxC("youth/list?serno=" + serno + "&pagesize=9999", {}, function(data) {
 					var datas = {
 						data: data.albumlist,
 						imgpath: data.prefix,
-						up: serno-1
-					}
+						up: serno - 1
+					};
 					var html = template("R-youth-t", datas);
 					$("#R-youth").html(html);
-					$(".codoon-list .w").eq(0).addClass('top2')
-					$(".codoon-list .w").eq(1).addClass('top2')
-					// 点击跳详情
-					$("#R-youth .w a.item").click(function() {
-						var albumid = $(this).data("id")
-						localStorage.setItem('albumid', albumid)
-						Q.go("youth/youth-detail-html?ceng3");
-					})
-				})
-			}
+					$(".codoon-list .w").eq(0).addClass('top2');
+					$(".codoon-list .w").eq(1).addClass('top2'); // 点击跳详情
 
-			// 我的训练
+					$("#R-youth .w a.item").click(function() {
+						var albumid = $(this).data("id");
+						localStorage.setItem('albumid', albumid);
+						Q.go("youth/youth-detail-html?ceng3");
+					});
+				});
+			} // 我的训练
+
+
 			function getYouthHistory() {
 				if (localStorage.getItem('isLogin') != 1) {
 					popBox15("请先登录");
-					return false
+					return false;
 				}
+
 				globalAjaxC("history/list?moduleid=youth&pagesize=9999", {}, function(data) {
 					var datas = {
 						data: data.history,
 						imgpath: data.prefix,
 						up: 4
+					};
+
+					for (var i = datas.data.length; i--;) {
+						datas.data[i].time = secondToDate(datas.data[i].played);
 					}
-					for (let i=datas.data.length;i--;){
-						datas.data[i].time = secondToDate(datas.data[i].played)
-					}
+
 					var html = template("R-youth-s", datas);
 					$("#R-youth").html(html);
-					if($("#youth-html .curr").length <=0) {
-						$("#youth-html .w a.item#b-0").addClass('curr')
-						$("#youth-html").scrollTop(0)
-					}
-					// 点击跳播放
+
+					if ($("#youth-html .curr").length <= 0) {
+						$("#youth-html .w a.item#b-0").addClass('curr');
+						$("#youth-html").scrollTop(0);
+					} // 点击跳播放
+
+
 					$("#R-youth .w a.item").click(function() {
-						var paid = $(this).data("paid")
+						var paid = $(this).data("paid");
+
 						if (youthVip == 0 && paid == 1) {
 							popBox15("请先购买会员");
-							return false
+							return false;
 						}
-						var played = $(this).data("played")
-						var contentid = $(this).data("contentid")
-						localStorage.setItem('contentId', contentid)
-						localStorage.setItem('played', played)
+
+						var played = $(this).data("played");
+						var contentid = $(this).data("contentid");
+						localStorage.setItem('contentId', contentid);
+						localStorage.setItem('played', played);
 						Q.go("youth/youth-video-html?ceng4");
-					})
-				})
-			}
-			// $("#youth-html .w a").off().on("click", function() {
+					});
+				});
+			} // $("#youth-html .w a").off().on("click", function() {
 			// 	if (youthVip == 1) {
 			// 		var url = $(this).data("href");
 			// 		Q.go("personal/my-list-html");
@@ -173,47 +181,50 @@
 			// 	}
 			// })
 
+
 			function popBox15(text) {
 				$("#youth-html .curr").addClass("past-cur");
-				$("#youth-html .curr").removeClass("curr")
+				$("#youth-html .curr").removeClass("curr");
 				$(".popBox15 .popCont .btn").addClass("curr");
 				$(".popBox15 .popCont h2").html(text);
 				$(".popBox15").show();
-			}
-			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+			} // 如果弹窗打开，返回键关闭弹窗不返回上一页
+
+
 			function goBackY() {
 				if ($(".popBox15").is(":visible")) {
 					$(".popBox15 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$("#youth-html .curr").removeClass("past-cur");
-					$(".popBox15 .popCont h2").html("")
+					$(".popBox15 .popCont h2").html("");
 					$(".popBox15").hide();
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
 			}
+
 			$(".popBox15 .popCont .btn").click(function() {
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$("#youth-html .curr").removeClass("past-cur");
-				$(".popBox15 .popCont h2").html("")
-				$(".popBox15").hide();
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'youth')
+				$(".popBox15 .popCont h2").html("");
+				$(".popBox15").hide(); // 跳转登录页
+
+				localStorage.setItem('moduleId', 'youth');
 				$("#youth-vip")[0].click();
 			});
-
 			$(document).on("keydown", function(e) {
 				// 识别方向键, 定位元素
 				if (e.keyCode >= 37 && e.keyCode <= 40) {
-					let curr = $(".curr").eq(0)
-					if (curr.offset().top > (1080 - curr.height())) {
-						$("#youth-html").scrollTop($("#youth-html").scrollTop() + curr.offset().top - 40)
+					var curr = $(".curr").eq(0);
+
+					if (curr.offset().top > 1080 - curr.height()) {
+						$("#youth-html").scrollTop($("#youth-html").scrollTop() + curr.offset().top - 40);
 					} else if (curr.offset().top < 0) {
-						$("#youth-html").scrollTop($("#youth-html").scrollTop() + curr.offset().top - 40)
+						$("#youth-html").scrollTop($("#youth-html").scrollTop() + curr.offset().top - 40);
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

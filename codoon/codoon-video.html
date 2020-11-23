@@ -5,24 +5,24 @@
 			<!-- <div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div> -->
 			<div class="mag-r-50 f-20 curr-box back-btn flex" style="display: none;">
 				<!-- <a href="javascript:;" class="btn">购买会员</a> -->
-				<a class="btn btn-back" id="back3" onclick="changeUrl()" data-down="video">返回</a>
+				<a class="btn btn-back" id="back3" data-down="video">返回</a>
 				<!-- </div> -->
 			</div>
-			<div id="bbbtttnnn" onclick="changeUrl()">换链接</div>
+
 			<div class="pad-t-50">
 				<div class="wrap">
 					<div class="flex-center">
 						<div class="w1376">
 							<div class="video-play">
 								<div class="video curr-box">
-									<video poster="" autoplay="autoplay" controls="controls" id="video" data-up="bbbtttnnn" class="curr" src="" type="video/mp4">
+									<video poster="" autoplay="autoplay" controls="controls" id="video" class="curr" src="" type="video/mp4">
 									</video>
 								</div>
 
-								<div class="video-info c-fff mag-t-30" id="video-play">
+								<div class="video-info mag-t-30 c-333" id="video-play">
 									<script type="text/html" id="video-play-t">
 										<h2 class="f-30">{{data.title}}</h2>
-										<p class="f-22 mag-t-20">{{data.intro}}</p>
+										<p class="f-22 mag-t-20 ">{{data.intro}}</p>
 									</script>
 								</div>
 							</div>
@@ -46,69 +46,50 @@
 			var contentId = localStorage.getItem("contentId");
 			var ww = $(window).width(),
 				wh = $(window).height();
-			var videoBool = true
-			var albumId = null
-		var urlindex = 0
-		var urlList = [
-			'http://mobilevideo.cdn.pandora.xiaomi.com/15412fcacd49f7ab992f938b33190bc9.mp4',
-			'http://mobilevideo.cdn.pandora.xiaomi.com/13130dc509216ce77921c5b38c49d290.mp4',
-			'http://mobilevideo.cdn.pandora.xiaomi.com/cdbd884cf8fb790906e972346054d7d8.mp4',
-			'http://qcloudcdn.moss.huan.tv/project%2Ftvq%2Fqsj_video%2F2020%2F08%2F31%2F2349805_0b60c8b1e948aa3b26f0b7c799ea9046.mp4',
-		]
-		function changeUrl(){
-			urlindex++
-			if(urlindex > 3) {
-				urlindex = 0
-			}
-			console.log(urlindex)
-			player[0].src = urlList[urlindex]
-			player[0].load()
-		}
-			getCodoonVedio(contentId)
-			function getCodoonVedio(contentId,vv=false) {
+			var videoBool = true;
+			var albumId = null;
+			getCodoonVedio(contentId);
+
+			function getCodoonVedio(contentId) {
+				var vv = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 				globalAjaxC("codoon/video?contentid=" + contentId, {}, function(data) {
-					var videourl = data.data.video
-					albumId = data.data.albumid
-					var videoimg = data.prefix + data.data.cover
+					var videourl = data.data.video;
+					albumId = data.data.albumid;
+					var videoimg = data.prefix + data.data.cover;
 					var html = template("video-play-t", data);
 					$("#video-play").html(html);
-
-			urlindex++
-			if(urlindex > 3) {
-				urlindex = 0
-			}
-			console.log(urlindex)
-					player[0].poster = videoimg
-					player[0].src = urlList[urlindex]
+					player[0].poster = videoimg;
+					player[0].src = videourl;
 					mui.showLoading("正在加载..", "div");
-					if(vv) return
+					if (vv) return;
 					video.addEventListener('loadedmetadata', function() {
 						if (localStorage.getItem("played") != null) {
-							var playedTime = localStorage.getItem("played")
+							var playedTime = localStorage.getItem("played");
 							player[0].currentTime = playedTime;
-							if(player[0].duration-1 <= playedTime) {
-								player[0].currentTime = 0
-							}
-							localStorage.setItem("played",0)
-						}
 
-						// setTimeout(function(event) {
+							if (player[0].duration - 1 <= playedTime) {
+								player[0].currentTime = 0;
+							}
+
+							localStorage.setItem("played", 0);
+						} // setTimeout(function(event) {
 						// 	if ($("#video").length > 0) {
 						// 		player[0].play();
 						// 	}
 						// }, 2000)
-					}, false)
 
+					}, false);
 					video.addEventListener('ended', function() {
-						getCodoonDetail()
-					},false)
-					video.addEventListener('waiting', function () { //加载
+						getCodoonDetail();
+					}, false);
+					video.addEventListener('waiting', function() {
+						//加载
 						mui.showLoading("正在加载..", "div");
-					},false)
-					video.addEventListener('playing', function (e) { //播放中
-						mui.hideLoading()
-					},false);
-
+					}, false);
+					video.addEventListener('playing', function(e) {
+						//播放中
+						mui.hideLoading();
+					}, false);
 					$("#video").click(function() {
 						if ($(".video").hasClass("fullScreen")) {
 							if (player.get(0).paused) {
@@ -123,105 +104,114 @@
 							$(".video").css({
 								"width": ww + "px",
 								"height": wh + "px"
-							})
+							});
 						}
-					})
-
+					});
 					$(document).on("keydown", function(e) {
 						if ($(".video").hasClass("fullScreen") || $("#video").hasClass("curr")) {
-							if (e.keyCode == 37) {
-								kuaitui(player)
+							if ($(".popCont .btn").hasClass('curr')) {
+								return;
 							}
+
+							if (e.keyCode == 37) {
+								kuaitui(player);
+							}
+
 							if (e.keyCode == 39) {
-								kuaijin(player)
+								kuaijin(player);
 							}
 						}
-					})
-				})
-			}
+					});
+				});
+			} // 播放完毕请求视频所属专辑
 
-			// 播放完毕请求视频所属专辑
+
 			function getCodoonDetail() {
 				globalAjaxC("codoon/detail?albumid=" + albumId, {}, function(data) {
-					let item = data.contentlist
-					for (let i = item.length; i--;) {
+					var item = data.contentlist;
+
+					for (var i = item.length; i--;) {
 						if (item[i].id == contentId) {
 							if (i == item.length - 1) {
-								popBox20('已经是最后一集了', $("#codoon-video-html .curr"))
-								videoBool = false
+								popBox20('已经是最后一集了', $("#codoon-video-html .curr"));
+								videoBool = false;
 							} else {
 								if (item[i + 1].playable == 0 && codoonVip == 0) {
-									popBox20('开通会员可观看下一集。', $("#codoon-video-html .curr"))
+									popBox20('开通会员可观看下一集。', $("#codoon-video-html .curr"));
 								} else {
-									contentId = item[i + 1].id
-									localStorage.setItem("contentId", contentId)
-									getCodoonVedio(contentId,true)
+									contentId = item[i + 1].id;
+									localStorage.setItem("contentId", contentId);
+									getCodoonVedio(contentId, true);
 								}
 							}
 						}
 					}
-				})
+				});
 			}
-			
+
 			function popBox20(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox20 .popCont .btn").addClass("curr");
 				$(".popBox20 .popCont h2").html(text);
 				$(".popBox20").show();
 			}
-			
+
 			$(".popBox20 .popCont .btn").click(function() {
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox20 .popCont h2").html("")
-				$(".popBox20").hide();
-				// 跳转登录页
+				$(".popBox20 .popCont h2").html("");
+				$(".popBox20").hide(); // 跳转登录页
+
 				if (videoBool) {
-					localStorage.setItem('moduleId', 'codoon')
-					Q.go("personal/vip-html?resh")
+					localStorage.setItem('moduleId', 'codoon');
+					Q.go("personal/vip-html?resh");
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
-			
 			});
 			$("#back3").click(function() {
 				if ($(".popBox20").is(":visible")) {
 					$(".popBox20 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$(".curr").removeClass("past-cur");
-					$(".popBox20 .popCont h2").html("")
+					$(".popBox20 .popCont h2").html("");
 					$(".popBox20").hide();
 				}
+
 				if (localStorage.getItem("isLogin") && localStorage.getItem("isLogin") == "1") {
 					var url = "history/update?contentid=" + contentId + "&played=" + Math.floor(player[0].currentTime);
 					globalAjaxC(url, {}, function(data) {
 						if (localStorage.getItem("played") != null) {
-							getCodoonHistory()
-							localStorage.removeItem("played")
-						}
-						//alert(JSON.stringify(data))
-					}); // 更新播放进度
-				};
+							getCodoonHistory();
+							localStorage.removeItem("played");
+						} //alert(JSON.stringify(data))
 
+					}); // 更新播放进度
+				}
+
+				;
 				setTimeout(function() {
 					history.go(-1);
 				}, 200);
-			})
+			});
 
-			function kuaijin(player) { //快进
-				if (!isNaN(player[0].duration)) { //判断有播放状态
+			function kuaijin(player) {
+				//快进
+				if (!isNaN(player[0].duration)) {
+					//判断有播放状态
 					var currtime = player[0].currentTime;
-					currtime += 20;
-					//alert(currtime)
+					currtime += 20; //alert(currtime)
+
 					if (currtime > player[0].duration - 2 && currtime < player[0].duration + 20) {
 						currtime = player[0].duration - 2;
 					} else if (currtime >= player[0].duration + 20) {
 						mui.toast("没有更多视频了");
 						return false;
 					}
-					clearTimeout(kuaijin)
+
+					clearTimeout(kuaijin);
 					var kuaijin = setTimeout(function(event) {
 						player[0].currentTime = currtime;
 						player[0].play();
@@ -229,18 +219,22 @@
 				}
 			}
 
-			function kuaitui(player) { //快退
-				if (!isNaN(player[0].duration)) { //判断有播放状态
-					var currtime = player[0].currentTime
-					currtime -= 20
+			function kuaitui(player) {
+				//快退
+				if (!isNaN(player[0].duration)) {
+					//判断有播放状态
+					var currtime = player[0].currentTime;
+					currtime -= 20;
+
 					if (currtime < 0) {
-						currtime = 0
+						currtime = 0;
 					}
-					clearTimeout(kuaitui)
+
+					clearTimeout(kuaitui);
 					var kuaitui = setTimeout(function() {
 						player[0].currentTime = currtime;
 						player[0].play();
-					}, 800)
+					}, 800);
 				}
 			}
 		</script>

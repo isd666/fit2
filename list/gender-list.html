@@ -68,18 +68,19 @@
 
 		<script>
 			var gender = localStorage.getItem('gender');
-			var fitVip = localStorage.getItem("fitVip");
-			//创建分页
+			var fitVip = localStorage.getItem("fitVip"); //创建分页
+
 			globalAjaxC("fit/list?gender=" + gender, {}, function(data) {
 				//分页
 				var itemlen = data.itemcount;
+				var page = Math.ceil(itemlen / 10); //console.log(page)
 
-				var page = Math.ceil(itemlen / 10);
-				//console.log(page)
 				var genderlistPage = new Page({
 					ele: "genderlistPage",
-					page: page, // 总页数
-					changePage: function(page) { //改变分页回调
+					page: page,
+					// 总页数
+					changePage: function changePage(page) {
+						//改变分页回调
 						ajax(page);
 					}
 				});
@@ -90,22 +91,23 @@
 				} else {
 					document.getElementById(genderlistPage.el).parentNode.style.display = "block";
 				}
-			})
+			});
 			ajax(1); // 初始化
-			function ajax(page) { //分页切换调用
+
+			function ajax(page) {
+				//分页切换调用
 				var offset = page - 1;
 				globalAjaxC("fit/list?gender=" + gender + "&pageno=" + offset + "&pagesize=10", {}, function(data) {
 					var datas = {
 						data: data.albumlist,
 						prefix: data.prefix
-					}
+					};
 					var html = template("sex-list-t", datas);
 					$("#sex-list").html(html);
-
 					$("#sex-list .item").each(function() {
 						var time = $(this).find('.font span em').text();
-						$(this).find('.font span em').html(secondToTime(time) + "分钟")
-					})
+						$(this).find('.font span em').html(secondToTime(time) + "分钟");
+					});
 
 					if (offset == "0" && $(".gender-list-box .curr").length == 0) {
 						if (datas.data.length > 0) {
@@ -114,28 +116,30 @@
 							$(".gender-list-box .btn-back").addClass("curr");
 						}
 					}
-					let isLogin = localStorage.getItem("isLogin")
+
+					var isLogin = localStorage.getItem("isLogin");
 					$("#sex-list a.item").off().on("click", function() {
 						var paid = $(this).data("paid");
 						var albumID = $(this).data("id");
+
 						if (paid == "0") {
 							localStorage.setItem('albumID', albumID);
 							Q.go("list/list-details-html?ceng4");
 						} else if (isLogin != 1) {
-							popBox7("请先登录", $(this))
+							popBox7("请先登录", $(this));
 						} else if (fitVip == "1") {
-							localStorage.setItem('albumID', albumID)
+							localStorage.setItem('albumID', albumID);
 							Q.go("list/list-details-html?ceng4");
 						} else if (fitVip == "0") {
-							popBox7("请先开通会员", $(this))
+							popBox7("请先开通会员", $(this));
 						}
-					})
-				})
+					});
+				});
 			}
 
 			function popBox7(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox7 .popCont .btn").addClass("curr");
 				$(".popBox7 .popCont h2").html(text);
 				$(".popBox7").show();
@@ -145,24 +149,22 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox7 .popCont h2").html("")
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'fit')
-				$(".goVip")[0].click(); 
+				$(".popBox7 .popCont h2").html(""); // 跳转登录页
+
+				localStorage.setItem('moduleId', 'fit');
+				$(".goVip")[0].click();
 			});
-
-
 			$(document).on("keydown", function(e) {
 				if (e.keyCode == 10009) {
 					if ($(".popBox7").is(":visible")) {
 						$(".popBox7 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$(".past-cur").removeClass("past-cur");
-						$(".popBox7 .popCont h2").html("")
+						$(".popBox7 .popCont h2").html("");
 						$(".popBox7").hide();
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

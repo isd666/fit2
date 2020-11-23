@@ -4,7 +4,8 @@
 			<div class="header flex jc-sb flex-center">
 				<div class="logo mag-l-50"><img class="logo" src="images/logo.png" /></div>
 				<div class="navBox flex flex-center f-28 curr-box" data-currbox="aa">
-					<a href="#!list/fhome-html?ceng2" class="nav1 mag-r-50 flex-center" id="aa-0" data-right="aa-1" data-down="b-0"><img src="images/icon1.png">视频课程</a>
+					<a href="#!list/fhome-html?ceng2" class="nav1 mag-r-50 flex-center" id="aa-0" data-right="aa-1" data-down="b-0"><img
+						 src="images/icon1.png">视频课程</a>
 					<a href="#!personal/vip-html?resh" class="nav2 mag-r-50 flex-center" id="aa-1" data-left="aa-0" data-down="b-0"><img
 						 src="images/icon2.png">开通会员</a>
 				</div>
@@ -54,17 +55,14 @@
 		</div>
 
 		<script>
-
 			globalAjaxC("fit/genders", {}, function(data) {
 				var datas = {
 					data: data.genders,
 					prefix: data.prefix
-				}
-				var html = template("gender-list-t", datas)
-				$("#gender-list").html(html)
-			})
-
-
+				};
+				var html = template("gender-list-t", datas);
+				$("#gender-list").html(html);
+			});
 			$(".mine").off().on("click", function() {
 				if (localStorage.getItem("isLogin") == 1) {
 					var url = $(this).data("href");
@@ -72,11 +70,11 @@
 				} else {
 					popBox5("请先登录");
 				}
-			})
+			});
 
 			function popBox5(text) {
 				$("#sex-html .curr").addClass("past-cur");
-				$("#sex-html .curr").removeClass("curr")
+				$("#sex-html .curr").removeClass("curr");
 				$(".popBox5 .popCont .btn").addClass("curr");
 				$(".popBox5 .popCont h2").html(text);
 				$(".popBox5").show();
@@ -86,24 +84,23 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$("#sex-html .curr").removeClass("past-cur");
-				$(".popBox5 .popCont h2").html("")
-				$(".popBox5").hide();
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'fit')
+				$(".popBox5 .popCont h2").html("");
+				$(".popBox5").hide(); // 跳转登录页
+
+				localStorage.setItem('moduleId', 'fit');
 				$(".nav2")[0].click();
 			});
-
 			$(document).on("keydown", function(e) {
 				if (e.keyCode == 10009) {
 					if ($(".popBox5").is(":visible")) {
 						$(".popBox5 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$("#sex-html .curr").removeClass("past-cur");
-						$(".popBox5 .popCont h2").html("")
+						$(".popBox5 .popCont h2").html("");
 						$(".popBox5").hide();
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

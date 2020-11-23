@@ -71,62 +71,62 @@
 
 		<script>
 			var albumid = localStorage.getItem('albumid');
-			var youthVip = localStorage.getItem("youthVip")
+			var youthVip = localStorage.getItem("youthVip");
 			globalAjaxC("youth/detail?albumid=" + albumid, {}, function(data) {
-				data.vip = youthVip
+				data.vip = youthVip;
 				var html = template("youth-info-t", data);
 				$("#youth-info").html(html);
 				var datas = {
 					data: data.contentlist,
 					prefix: data.prefix,
 					vip: youthVip
-				}
+				};
 				var html2 = template("youth-detail-t", datas);
 				$("#youth-detail").html(html2);
-
 				$(".course .course-list .item").each(function() {
 					var time = $(this).find('.font span em').text();
-					$(this).find('.font span em').html(secondToTime(time) + "分钟")
-				})
-
+					$(this).find('.font span em').html(secondToTime(time) + "分钟");
+				});
 				$("#youth-detail .item a").click(function() {
-					var paid = $(this).data("paid")
-					var contentId = $(this).data("id")
+					var paid = $(this).data("paid");
+					var contentId = $(this).data("id");
+
 					if (paid == "1") {
-						localStorage.setItem('contentId', contentId)
+						localStorage.setItem('contentId', contentId);
 						Q.go("youth/youth-video-html?ceng4");
 					} else if (youthVip == "1") {
-						localStorage.setItem('contentId', contentId)
+						localStorage.setItem('contentId', contentId);
 						Q.go("youth/youth-video-html?ceng4");
 					} else if (youthVip == "0") {
-						popBox17("请先开通会员", $(this))
+						popBox17("请先开通会员", $(this));
 					} else {
-						popBox17("请先登录", $(this))
+						popBox17("请先登录", $(this));
 					}
-				})
+				});
 				$("#cc-0").click(function() {
-					var paid = $(this).data("paid")
-					var hId = $(this).data("id")
+					var paid = $(this).data("paid");
+					var hId = $(this).data("id");
+
 					if (youthVip == "0" && paid == "0") {
-						popBox17("请先开通会员", $(this))
+						popBox17("请先开通会员", $(this));
 					} else {
-						localStorage.setItem('contentId', hId)
+						localStorage.setItem('contentId', hId);
 						Q.go("youth/youth-video-html?ceng4");
 					}
-				})
-			})
-			// 开始训练
+				});
+			}); // 开始训练
+
 			function startYouth(paid, that) {
 				if (youthVip == "0" && paid == "1") {
-					popBox17("请先开通会员", $(that))
+					popBox17("请先开通会员", $(that));
 				} else {
-					$("#dd-0")[0].click()
+					$("#dd-0")[0].click();
 				}
 			}
 
 			function popBox17(text, obj) {
 				obj.addClass("past-cur");
-				obj.removeClass("curr")
+				obj.removeClass("curr");
 				$(".popBox17 .popCont .btn").addClass("curr");
 				$(".popBox17 .popCont h2").html(text);
 				$(".popBox17").show();
@@ -136,22 +136,22 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$(".past-cur").removeClass("past-cur");
-				$(".popBox17 .popCont h2").html("")
-				$(".popBox17").hide();
-				// 跳转登录页
-				localStorage.setItem('moduleId', 'youth')
+				$(".popBox17 .popCont h2").html("");
+				$(".popBox17").hide(); // 跳转登录页
+
+				localStorage.setItem('moduleId', 'youth');
 				$("#cc-1")[0].click();
-			});
-			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+			}); // 如果弹窗打开，返回键关闭弹窗不返回上一页
+
 			function goBackYD() {
 				if ($(".popBox17").is(":visible")) {
 					$(".popBox17 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$("#youth-detail-html .curr").removeClass("past-cur");
-					$(".popBox17 .popCont h2").html("")
+					$(".popBox17 .popCont h2").html("");
 					$(".popBox17").hide();
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
 			}
 
@@ -161,24 +161,26 @@
 						$(".popBox17 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$(".past-cur").removeClass("past-cur");
-						$(".popBox17 .popCont h2").html("")
+						$(".popBox17 .popCont h2").html("");
 						$(".popBox17").hide();
 					}
-				}
-				// 识别方向键, 定位元素
+				} // 识别方向键, 定位元素
+
+
 				if (e.keyCode >= 37 && e.keyCode <= 40) {
 					if ($(".curr").data("top")) {
-						$("#youth-detail-html").scrollTop(0)
+						$("#youth-detail-html").scrollTop(0);
 					}
-					let curr = $(".curr").eq(0)
-					if (curr.offset().top > (1080 - curr.height())) {
-						$("#youth-detail-html").scrollTop($("#youth-detail-html").scrollTop() + curr.offset().top - 40)
+
+					var curr = $(".curr").eq(0);
+
+					if (curr.offset().top > 1080 - curr.height()) {
+						$("#youth-detail-html").scrollTop($("#youth-detail-html").scrollTop() + curr.offset().top - 40);
 					} else if (curr.offset().top < 0) {
-						$("#youth-detail-html").scrollTop($("#youth-detail-html").scrollTop() + curr.offset().top - 40)
+						$("#youth-detail-html").scrollTop($("#youth-detail-html").scrollTop() + curr.offset().top - 40);
 					}
 				}
-
-			})
+			});
 		</script>
 	</div>
 </div>

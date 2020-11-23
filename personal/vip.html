@@ -4,7 +4,8 @@
 			<!-- <a class="btn-back vip-back" href="javascript:history.go(-1);" style="display:none;"></a> -->
 			<div class="headerNew flex jc-sb flex-center">
 				<div class="navBoxNew flex flex-center f-28 curr-box" data-currbox="aa">
-					<a href="#!list/fhome-html?ceng2" class="nav mag-l-40 flex-center" id="aa-0" data-right="aa-1" data-down="b-0"><img src="images/icon_fit.png"></a>
+					<a href="#!list/fhome-html?ceng2" class="nav mag-l-40 flex-center" id="aa-0" data-right="aa-1" data-down="b-0"><img
+						 src="images/icon_fit.png"></a>
 					<a href="#!codoon/codoon-html?ceng2" class="nav mag-l-40 flex-center" id="aa-1" data-right="aa-2" data-left="aa-0"
 					 data-down="b-0"><img src="images/icon_codoon.png"></a>
 					<a href="#!ehome/ehome-html?ceng2" class="nav mag-l-40 flex-center" id="aa-2" data-right="aa-3" data-left="aa-1"
@@ -95,7 +96,7 @@
 				已购买<span class="c-yellow f-40 pad-10 modname"></span>会员卡
 			</div>
 			<div class="card flex flex-wrap">
-				<a href="#!personal/pay-html?resh" onclick="javascript:localStorage.setItem('cardid','{{data.id}}')" class="pr dpb black" data-up="aa-4" data-left="b-0">
+				<a href="#!personal/pay-html?resh" onclick="javascript:localStorage.setItem('cardid','{{data.id}}')" class="pr dpb black vip_card" data-up="aa-4" data-left="b-0">
 					<img src="{{prefix + data.cover}}" class="ratio-img ecover" onerror="lod(this)">
 					<span class="font3 pa f-40 dpb etitle"></span>
 					<span class="font4 pa f-30 dpb eprice g666">{{data.enddate}}<em class="mag-l-10">到期</em></span>
@@ -125,61 +126,66 @@
 				'fit': 'Fit',
 				'codoon': '咕咚',
 				'ehome': 'E家健康',
-				'youth': '芳华大学',
-			}
-			var timer_aa = null
-			// 初始化数据
-			chackLogin();
-			// 检测登录
+				'youth': '芳华大学'
+			};
+			var timer_aa = null; // 初始化数据
+
+			chackLogin(); // 检测登录
+
 			function chackLogin() {
 				globalAjaxC("user/status", {}, function(data) {
-					//alert(JSON.stringify(data))
 					if (data.result == "false") {
 						if (timer_aa != null) {
-							return
+							return;
 						}
+
 						localStorage.setItem("isLogin", "0");
-						getLoginQr()
+						getLoginQr();
 					} else {
-						clearInterval(timer_aa)
-						loginSuccess(data)
+						clearInterval(timer_aa);
+						loginSuccess(data);
 					}
-				})
-			}
-			// 获取登录二维码
+				});
+			} // 获取登录二维码
+
+
 			function getLoginQr() {
 				$("#vip-html .login").html(
 					'<a id="login" class="flex-center unlogin" data-down="b-0" data-left="aa-4"><img class="none" src="images/unlogin.png"><img class="block" src="images/icon3.png"><span>未登录</span></a>'
 				);
 				$(".vip-cont").hide();
 				$(".reg-cont").show();
-				globalAjaxD("user/login?ver=" + Math.random(), {},function(data) {
+				globalAjaxD("user/login?ver=" + Math.random(), {}, function(data) {
 					this.qrcode.makeCode(data);
-					loginStatus()
-				})
-				// 判断光标是否存在,不存在添加到登录按钮
+					loginStatus();
+				}); // 判断光标是否存在,不存在添加到登录按钮
+
 				if ($(".curr").length == 0) {
-					$("#login").addClass('curr')
+					$("#login").addClass('curr');
 				}
-			}
-			// 登录成功渲染页面
+			} // 登录成功渲染页面
+
+
 			function loginSuccess(data) {
 				// 检测本地是否有储存模板ID, 没有首次储存fit
 				if (!localStorage.getItem('moduleId')) {
-					localStorage.setItem('moduleId', 'fit')
+					localStorage.setItem('moduleId', 'fit');
 				}
-				let moduleId = localStorage.getItem('moduleId');
-				// 重置光标
-				$("#vip-html .curr").removeClass('curr')
-				if(moduleId == 'fit'){
-					$("#vip-html #b-0").addClass('curr')
-				} else if(moduleId == 'codoon'){
-					$("#vip-html #b-1").addClass('curr')
-				} else if(moduleId == 'ehome'){
-					$("#vip-html #b-2").addClass('curr')
-				} else if(moduleId == 'youth'){
-					$("#vip-html #b-3").addClass('curr')
+
+				var moduleId = localStorage.getItem('moduleId'); // 重置光标
+
+				$("#vip-html .curr").removeClass('curr');
+
+				if (moduleId == 'fit') {
+					$("#vip-html #b-0").addClass('curr');
+				} else if (moduleId == 'codoon') {
+					$("#vip-html #b-1").addClass('curr');
+				} else if (moduleId == 'ehome') {
+					$("#vip-html #b-2").addClass('curr');
+				} else if (moduleId == 'youth') {
+					$("#vip-html #b-3").addClass('curr');
 				}
+
 				localStorage.setItem("isLogin", "1");
 				$(".vip-cont").show();
 				$(".reg-cont").hide();
@@ -188,21 +194,23 @@
 				});
 				$(".person span").text(data.user.nickname);
 				$("#vip-html .login").html(
-					'<a id="login" class="quit flex-center" data-down="b-0" data-left="aa-4"><img class="login-avatar" src="' + data.user.avatar + '"><span>退出登录</span></a>'
-				);
+					'<a id="login" class="quit flex-center" data-down="b-0" data-left="aa-4"><img class="login-avatar" src="' + data.user
+					.avatar + '"><span>退出登录</span></a>');
 				$("#vip-html .quit").click(function() {
-					globalAjaxC("user/logout", {}, function(data){
+					globalAjaxC("user/logout", {}, function(data) {
 						localStorage.setItem("isLogin", 0);
-						getLoginQr()
+						getLoginQr();
 					});
-				})
-				// 判断光标是否存在,不存在添加到登录按钮
-				if($(".curr").length == 0) {
-					$("#login").addClass('curr')
+				}); // 判断光标是否存在,不存在添加到登录按钮
+
+				if ($(".curr").length == 0) {
+					$("#login").addClass('curr');
 				}
+
 				getVip();
-			}
-			// 获取VIP
+			} // 获取VIP
+
+
 			function getVip() {
 				var moduleId = localStorage.getItem('moduleId');
 				globalAjaxC(moduleId + "/membership", {}, function(data) {
@@ -212,69 +220,72 @@
 							var datas = {
 								data: data.data,
 								prefix: data.prefix
-							}
-							var html = template("vip-card-t", datas)
+							};
+							var html = template("vip-card-t", datas);
 							$("#vip-card").html(html);
 							$(".modname").text(vipMod[moduleId]);
-						})
+						});
 					} else {
 						//已购买会员卡
-						localStorage.setItem(moduleId + "Vip", "1")
-						var html2 = template("vip-buy-t", data)
-						$("#vip-card").html(html2)
-						$("#vip-card .etitle").text(vipMod[moduleId] + '会员：' + data.data.title)
+						localStorage.setItem(moduleId + "Vip", "1");
+						var html2 = template("vip-buy-t", data);
+						$("#vip-card").html(html2);
+						$("#vip-card .etitle").text(vipMod[moduleId] + '会员：' + data.data.title);
 						$(".modname").text(vipMod[moduleId]);
 					}
-				})
+				});
+			} // 轮询检测登录状态
 
-			}
-			// 轮询检测登录状态
+
 			function loginStatus() {
 				var i = 0;
 				timer_aa = setInterval(function() {
-					if (location.href.split("#!")[1].substr(0, 17) != "personal/vip-html") {
+					if (location.href.indexOf('personal/vip-html') == -1) {
 						clearInterval(timer_aa);
 						return false;
 					}
+
 					i++;
-					chackLogin()
+					chackLogin();
+
 					if (i >= 300) {
 						popBox2("登录超时，请重试~");
 						clearInterval(timer_aa);
 					}
 				}, 1000);
-			}
-			// 提示窗
+			} // 提示窗
+
+
 			function popBox2(text) {
 				$("#vip-html .curr").addClass("past-cur");
-				$(".past-cur").removeClass("curr")
+				$(".past-cur").removeClass("curr");
 				$(".popBox2 .popCont .btn").addClass("curr");
 				$(".popBox2 .popCont h2").html(text);
 				$(".popBox2").show();
-			}
-			// 提示窗点击
+			} // 提示窗点击
+
+
 			$(".popBox2 .popCont .btn").click(function() {
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$("#vip-html .curr").removeClass("past-cur");
-				$(".popBox2 .popCont h2").html("")
-				$(".popBox2").hide();
-				// history.go(-1);
-				getLoginQr()
-			});
+				$(".popBox2 .popCont h2").html("");
+				$(".popBox2").hide(); // history.go(-1);
 
+				getLoginQr();
+			});
 			$(document).on("keydown", function(e) {
 				if (e.keyCode == 10009) {
 					if ($(".popBox2").is(":visible")) {
 						$(".popBox2 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$("#vip-html .curr").removeClass("past-cur");
-						$(".popBox2 .popCont h2").html("")
+						$(".popBox2 .popCont h2").html("");
 						$(".popBox2").hide();
 						history.go(-1);
 					}
 				}
-			})
+			});
 		</script>
 	</div>
 </div>

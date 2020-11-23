@@ -639,14 +639,16 @@ function getLog(log) {
 }
 function globalAjaxC(url, data, call) {
 	var tim333 = setTimeout(function() {
-		mui.showLoading("正在加载..", "div");
-		$("body").addClass("loading");
+		if(url != 'user/status') {
+			mui.showLoading("正在加载..", "div");
+			$("body").addClass("loading");
+		}
 		clearInterval(tim333);
 	}, 200);
 	$.ajax({
 		type: "get",
 		dataType: "json",
-		timeout: 30000,
+		timeout: 3000,
 		url: jsonpath2 + url,
 		data: data,
 		cache: false,

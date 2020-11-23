@@ -359,7 +359,7 @@
 	right: 0;
 	top: 0;
 }
-
+.codoon-list .item .font,
 .course .course-list .item .font,
 .list-list .item .font {
 	left: 0;
@@ -491,7 +491,10 @@
 	background: url(../images/icon6.png) left no-repeat;
 	line-height: 2;
 }
-
+.ecover {
+	width: 1044px;
+	height: 283px;
+}
 .person {
 	width: 290px;
 	text-align: center;
@@ -687,7 +690,7 @@
 #codoon-html {
 	width: 1920px;
 	height: 1080px;
-	overflow: auto;
+	overflow: hidden;
 	margin: 0 auto;
 	position: relative;
 	background: linear-gradient(to right, #69a3c1 , #a681ba);

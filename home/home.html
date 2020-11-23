@@ -3,10 +3,8 @@
 		<div class="home-box">
 			<div class="headerNew flex jc-sb flex-center">
 				<div class="navBoxNew flex flex-center f-28 curr-box" data-currbox="aa">
-					<!-- <a href="#!home/test-html?ceng2" class="nav mag-lr-40 flex-center" id="aa-5" data-left="aa-4" data-right="aa-0" data-down="bh-0"><img
-						 src="images/icon_fit.png"></a> -->
-					<a href="#!list/fhome-html?ceng2" class="curr nav mag-l-40 flex-center" id="aa-0" data-left="aa-5" data-right="aa-1" data-down="bh-0"><img
-						 src="images/icon_fit.png"></a>
+					<a href="#!list/fhome-html?ceng2" class="curr nav mag-l-40 flex-center" id="aa-0" data-left="aa-5" data-right="aa-1"
+					 data-down="bh-0"><img src="images/icon_fit.png"></a>
 					<a href="#!codoon/codoon-html?ceng2" class="nav mag-l-40 flex-center" id="aa-1" data-right="aa-2" data-left="aa-0"
 					 data-down="bh-0"><img src="images/icon_codoon.png"></a>
 					<a href="#!ehome/ehome-html?ceng2" class="nav mag-l-40 flex-center" id="aa-2" data-right="aa-3" data-left="aa-1"
@@ -49,7 +47,6 @@
 			<script>
 				// 登录检测
 				globalAjaxC("user/status", {}, function(data) {
-
 					if (data.result == "false") {
 						localStorage.setItem("isLogin", "0");
 						$("#home-html-new .login").html(
@@ -58,8 +55,8 @@
 					} else {
 						localStorage.setItem("isLogin", "1");
 						$("#home-html-new .login").html(
-							'<a id="login" class="quit flex-center" data-down="bh-0" data-left="aa-4"><img class="login-avatar" src="' + data.user.avatar + '"><span>退出登录</span></a>'
-						);
+							'<a id="login" class="quit flex-center" data-down="bh-0" data-left="aa-4"><img class="login-avatar" src="' +
+							data.user.avatar + '"><span>退出登录</span></a>');
 						$(".quit").click(function() {
 							globalAjaxC("user/logout", {}, function(data) {
 								localStorage.removeItem("isLogin");
@@ -67,36 +64,42 @@
 									'<a href="#!personal/vip-html?resh" id="login" class="curr flex-center unlogin" data-down="bh-0" data-left="aa-4"><img class="none" src="images/unlogin.png"><img class="block" src="images/icon3.png"><span>未登录</span></a>'
 								);
 							});
-						})
+						});
 					}
-				})
-				// 获取首页数据
+				}); // 获取首页数据
+
 				globalAjaxC("home/index", {}, function(data) {
-					var dataArr = data.data
-					for (let i = 0;i<dataArr.length;i++) {
-						if(dataArr[i].id == 'fit') {
-							dataArr[i]['urlPath'] = 'list/fhome-html?ceng2'
+					var dataArr = data.data;
+
+					for (var i = 0; i < dataArr.length; i++) {
+						if (dataArr[i].id == 'fit') {
+							dataArr[i]['urlPath'] = 'list/fhome-html?ceng2';
 						}
+
 						if (dataArr[i].id == 'codoon') {
-							dataArr[i]['urlPath'] = 'codoon/codoon-html?ceng2'
+							dataArr[i]['urlPath'] = 'codoon/codoon-html?ceng2';
 						}
+
 						if (dataArr[i].id == 'ehome') {
-							dataArr[i]['urlPath'] = 'ehome/ehome-html?ceng2'
+							dataArr[i]['urlPath'] = 'ehome/ehome-html?ceng2';
 						}
+
 						if (dataArr[i].id == 'youth') {
-							dataArr[i]['urlPath'] = 'youth/youth-html?ceng2'
+							dataArr[i]['urlPath'] = 'youth/youth-html?ceng2';
 						}
 					}
+
 					var datas = {
 						data: data.data,
-						imgpath: data.prefix,
-					}
+						imgpath: data.prefix
+					};
 					var html = template("R-home-t-new", datas);
 					$("#R-home-new").html(html);
-				})
+				});
+
 				function popBox14(text) {
 					$("#home-html-new .curr").addClass("past-cur");
-					$("#home-html-new .curr").removeClass("curr")
+					$("#home-html-new .curr").removeClass("curr");
 					$(".popBox14 .popCont .btn").addClass("curr");
 					$(".popBox14 .popCont h2").html(text);
 					$(".popBox14").show();
@@ -106,21 +109,20 @@
 					$(this).removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$("#home-html-new .curr").removeClass("past-cur");
-					$(".popBox14 .popCont h2").html("")
+					$(".popBox14 .popCont h2").html("");
 					$(".popBox14").hide();
 				});
-
 				$(document).on("keydown", function(e) {
 					if (e.keyCode == 10009) {
 						if ($(".popBox14").is(":visible")) {
 							$(".popBox14 .popCont .btn").removeClass("curr");
 							$(".past-cur").addClass("curr");
 							$("#home-html-new .curr").removeClass("past-cur");
-							$(".popBox14 .popCont h2").html("")
+							$(".popBox14 .popCont h2").html("");
 							$(".popBox14").hide();
 						}
 					}
-				})
+				});
 			</script>
 		</div>
 	</div>

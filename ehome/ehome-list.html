@@ -47,22 +47,22 @@
 		</div>
 
 		<script>
-			var serno = localStorage.getItem('serno')
+			var serno = localStorage.getItem('serno');
 			globalAjaxC("ehome/list?serno=" + serno + "&pagesize=9999", {}, function(data) {
 				var datas = {
 					data: data.albumlist,
 					category: data.category,
 					imgpath: data.prefix,
 					length: data.albumlist.length
-				}
+				};
 				var html = template("R-ehome-list-t", datas);
 				$("#R-ehome-list").html(html);
-				$("#R-ehome-list .w .item").eq(0).addClass('curr')
-			})
+				$("#R-ehome-list .w .item").eq(0).addClass('curr');
+			});
 
 			function popBox4(text) {
 				$("#ehome-list-html .curr").addClass("past-cur");
-				$("#ehome-list-html .curr").removeClass("curr")
+				$("#ehome-list-html .curr").removeClass("curr");
 				$(".popBox4 .popCont .btn").addClass("curr");
 				$(".popBox4 .popCont h2").html(text);
 				$(".popBox4").show();
@@ -72,19 +72,19 @@
 				$(this).removeClass("curr");
 				$(".past-cur").addClass("curr");
 				$("#ehome-list-html .curr").removeClass("past-cur");
-				$(".popBox4 .popCont h2").html("")
+				$(".popBox4 .popCont h2").html("");
 				$(".popBox4").hide();
-			});
-			// 如果弹窗打开，返回键关闭弹窗不返回上一页
+			}); // 如果弹窗打开，返回键关闭弹窗不返回上一页
+
 			function goBackEL() {
 				if ($(".popBox4").is(":visible")) {
 					$(".popBox4 .popCont .btn").removeClass("curr");
 					$(".past-cur").addClass("curr");
 					$("#ehome-list-html .curr").removeClass("past-cur");
-					$(".popBox4 .popCont h2").html("")
+					$(".popBox4 .popCont h2").html("");
 					$(".popBox4").hide();
 				} else {
-					history.go(-1)
+					history.go(-1);
 				}
 			}
 
@@ -94,19 +94,16 @@
 						$(".popBox4 .popCont .btn").removeClass("curr");
 						$(".past-cur").addClass("curr");
 						$("#ehome-list-html .curr").removeClass("past-cur");
-						$(".popBox4 .popCont h2").html("")
+						$(".popBox4 .popCont h2").html("");
 						$(".popBox4").hide();
 					}
-				}
-				// 识别方向键, 定位元素
+				} // 识别方向键, 定位元素
+
+
 				if (e.keyCode >= 37 && e.keyCode <= 40) {
-					if ($(".curr").eq(0).offset().top > 1080 - $(".curr").eq(0).height()) {
-						$("#ehome-list-html").scrollTop($("#ehome-list-html").scrollTop() + $(".curr").eq(0).offset().top - 40)
-					} else if ($(".curr").eq(0).offset().top < 0) {
-						$("#ehome-list-html").scrollTop($("#ehome-list-html").scrollTop() + $(".curr").eq(0).offset().top - 40)
-					}
+					$("#ehome-list-html").scrollTop($("#ehome-list-html").scrollTop() + $(".curr").eq(0).offset().top - 414);
 				}
-			})
+			});
 		</script>
 	</div>
 </div>
